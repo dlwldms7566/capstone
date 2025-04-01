@@ -1,11 +1,16 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import styles from "../styles/SignUp.module.css";
+
 function SignUp() {
     const [formData, setFormData] = useState({
         name: "",
         email: "",
         password: "",
+        isAllAgreed: false,
+        isAgreed: false,
+        privacy: false,
+        ad: false
     });
     const [isLoading, setIsLoading] = useState(false);
     const navigate = useNavigate();
@@ -17,14 +22,35 @@ function SignUp() {
         });
     };
 
-    const handleCheckboxChange = (e) => {
+    const handleAllCheck = () => {
+        const newState = !formData.isAllAgreed;
         setFormData({
             ...formData,
-            [e.target.name]: e.target.checked,
+            isAllAgreed: newState,
+            isAgreed: newState,
+            privacy: newState,
+            ad: newState
         });
     };
 
-    const handleSubmit = async (e) => {
+    const handleCheckboxChange = (e) => {
+        const { name, checked } = e.target;
+        
+        setFormData((prev) => {
+            const updatedState = {
+                ...prev,
+                [name]: checked, 
+            };
+    
+            const allChecked = updatedState.isAgreed && updatedState.privacy && updatedState.ad;
+            updatedState.isAllAgreed = allChecked;
+    
+            return updatedState;
+        });
+    };
+    
+
+const handleSubmit = async (e) => {
         e.preventDefault();
         setIsLoading(true);
         // try {
@@ -60,7 +86,10 @@ function SignUp() {
     return (
         <div className={styles.container}>
             <div className={styles.signupBox}>
-                <h2 className={styles.title}>과시리</h2>
+                <div className="logo_title">
+                    <img src="/logo.png" alt="로고" />
+                    <h2 className={styles.title}>과시리</h2>
+                </div>
                 <form onSubmit={handleSubmit} className={styles.form}>
 
                     <div>
@@ -175,13 +204,28 @@ function SignUp() {
                         <label>
                             <input
                                 type="checkbox"
+                                name="isAllAgreed"
+                                checked={formData.isAllAgreed}
+                                onChange={handleAllCheck}
+                            />
+                            아래 내용에 모두 동의합니다{" "}
+                            <a className={styles.policy} href="https://openai.com/policies/terms-of-use/" target="_blank" rel="noopener noreferrer">
+                                자세히 보기
+                            </a>
+                        </label>
+                    </div>
+
+                    <div className={styles.checkboxContainer}>
+                        <label>
+                            <input
+                                type="checkbox"
                                 name="isAgreed"
                                 checked={formData.isAgreed}
                                 onChange={handleCheckboxChange}
                                 required
                             />
                             (필수) 이용약관에 동의합니다.{" "}
-                            <a href="https://openai.com/policies/terms-of-use/" target="_blank" rel="noopener noreferrer">
+                            <a className={styles.policy} href="https://openai.com/policies/terms-of-use/" target="_blank" rel="noopener noreferrer">
                                 자세히 보기
                             </a>
                         </label>
@@ -192,12 +236,12 @@ function SignUp() {
                             <input
                                 type="checkbox"
                                 name="privacy"
-                                checked={formData.isAgreed}
+                                checked={formData.privacy}
                                 onChange={handleCheckboxChange}
                                 required
                             />
                             (필수) 개인정보 수집 및 이용에 대한 안내에 동의합니다.{" "}
-                            <a href="https://openai.com/policies/terms-of-use/" target="_blank" rel="noopener noreferrer">
+                            <a className={styles.policy} href="https://openai.com/policies/terms-of-use/" target="_blank" rel="noopener noreferrer">
                                 자세히 보기
                             </a>
                         </label>
@@ -208,12 +252,11 @@ function SignUp() {
                             <input
                                 type="checkbox"
                                 name="ad"
-                                checked={formData.isAgreed}
+                                checked={formData.ad}
                                 onChange={handleCheckboxChange}
-                                required
                             />
-                            (선택) 과시리 홍보성 정보 수신에 동의합니다.{" "}
-                            <a href="https://openai.com/policies/terms-of-use/" target="_blank" rel="noopener noreferrer">
+                            (선택) 홍보성 정보 수신에 동의합니다.{" "}
+                            <a className={styles.policy} href="https://openai.com/policies/terms-of-use/" target="_blank" rel="noopener noreferrer">
                                 자세히 보기
                             </a>
                         </label>

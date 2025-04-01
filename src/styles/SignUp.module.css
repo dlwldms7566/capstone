@@ -5,6 +5,7 @@
     min-height: 100vh;
     color: rgb(180, 180, 180);
     font-size: 13px;
+    text-align: left;
 }
 
 .signupBox {
@@ -22,7 +23,7 @@
     font-weight: bold;
     text-align: center;
     margin-bottom: 1.5rem;
-    color: blue;
+    color: #0056d2;
 }
 
 .form {
@@ -43,7 +44,7 @@
 }
 
 .input:focus {
-    border-color: rgb(16, 163, 127);
+    border-color: #0056d2;
 }
 
 .input::placeholder {
@@ -66,7 +67,7 @@
 }
 
 .button:hover {
-    background-color: rgb(16, 163, 127);
+    background-color: #0056d2;
 }
 
 .loginText {
@@ -90,4 +91,20 @@
     border-top: 0.8px solid rgb(180, 180, 180);
     font-weight: 300;
     padding-top: 30px;
+}
+
+.policy {
+    text-decoration: none;
+    color: black !important;
+}
+
+.policy:visited {
+    text-decoration: none;
+    color: rgb(180, 180, 180);
+}
+
+.gender {
+    display: flex;
+    align-items: center;
+    gap: 50px; 
 }
