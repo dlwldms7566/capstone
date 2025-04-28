@@ -88,11 +88,10 @@ const handleSubmit = async (e) => {
             <div className={styles.signupBox}>
                 <div className="logo_title">
                     <img src="/logo.png" alt="로고" />
-                    <h2 className={styles.title}>과시리</h2>
                 </div>
                 <form onSubmit={handleSubmit} className={styles.form}>
 
-                    <div>
+                    <div className={styles.inputGroup}>
                         <input
                             type="text"
                             name="name"
@@ -104,7 +103,7 @@ const handleSubmit = async (e) => {
                         />
                     </div>
 
-                    <div>
+                    {/* <div>
                         <input
                             type="id"
                             name="id"
@@ -114,9 +113,9 @@ const handleSubmit = async (e) => {
                             className={styles.input}
                             placeholder="아이디"
                         />
-                    </div>
+                    </div> */}
 
-                    <div>
+                    <div className={styles.inputGroup}>
                         <input
                             type="email"
                             name="email"
@@ -128,7 +127,7 @@ const handleSubmit = async (e) => {
                         />
                     </div>
 
-                    <div>
+                    <div className={styles.inputGroupSmall}>
                         <input
                             type="password"
                             name="password"
@@ -139,8 +138,10 @@ const handleSubmit = async (e) => {
                             placeholder="비밀번호"
                         />
                     </div>
-                    8~20자 영문 대소문자, 숫자, 특수문자 중 2가지 이상 조합
-                    <div>
+                    <div className={styles.noticeText}>
+                        8~20자 영문 대소문자, 숫자, 특수문자 중 2가지 이상 조합
+                    </div>
+                    <div className={styles.inputGroupSmall}>
                         <input
                             type="password check"
                             name="password check"
@@ -152,54 +153,6 @@ const handleSubmit = async (e) => {
                         />
                     </div>
 
-                    <div>
-                        <input
-                            type="birthday"
-                            name="birthday"
-                            value={formData.password}
-                            onChange={handleChange}
-                            required
-                            className={styles.input}
-                            placeholder="생년월일(8자리)"
-                        />
-                    </div>
-
-                    <div>
-                        <input
-                            type="phone"
-                            name="phone"
-                            value={formData.password}
-                            onChange={handleChange}
-                            required
-                            className={styles.input}
-                            placeholder="휴대전화번호"
-                        />
-                    </div>
-
-                    <div className={styles.gender}>
-                        성별
-                        <label>
-                            <input
-                                type="radio"
-                                name="gender"
-                                value="male"
-                                onChange={handleChange}
-                                checked={formData.gender === "male"}
-                            />
-                            남
-                        </label>
-                        <label>
-                            <input
-                                type="radio"
-                                name="gender"
-                                value="female"
-                                onChange={handleChange}
-                                checked={formData.gender === "female"}
-                            />
-                            여
-                        </label>
-                    </div>
-
                     <div className={styles.checkboxContainer}>
                         <label>
                             <input
@@ -209,9 +162,9 @@ const handleSubmit = async (e) => {
                                 onChange={handleAllCheck}
                             />
                             아래 내용에 모두 동의합니다{" "}
-                            <a className={styles.policy} href="https://openai.com/policies/terms-of-use/" target="_blank" rel="noopener noreferrer">
+                            {/* <a className={styles.policy} href="https://openai.com/policies/terms-of-use/" target="_blank" rel="noopener noreferrer">
                                 자세히 보기
-                            </a>
+                            </a> */}
                         </label>
                     </div>
 
@@ -225,9 +178,9 @@ const handleSubmit = async (e) => {
                                 required
                             />
                             (필수) 이용약관에 동의합니다.{" "}
-                            <a className={styles.policy} href="https://openai.com/policies/terms-of-use/" target="_blank" rel="noopener noreferrer">
+                            {/* <a className={styles.policy} href="https://openai.com/policies/terms-of-use/" target="_blank" rel="noopener noreferrer">
                                 자세히 보기
-                            </a>
+                            </a> */}
                         </label>
                     </div>
 
@@ -241,13 +194,13 @@ const handleSubmit = async (e) => {
                                 required
                             />
                             (필수) 개인정보 수집 및 이용에 대한 안내에 동의합니다.{" "}
-                            <a className={styles.policy} href="https://openai.com/policies/terms-of-use/" target="_blank" rel="noopener noreferrer">
+                            {/* <a className={styles.policy} href="https://openai.com/policies/terms-of-use/" target="_blank" rel="noopener noreferrer">
                                 자세히 보기
-                            </a>
+                            </a> */}
                         </label>
                     </div>
 
-                    <div className={styles.checkboxContainer}>
+                    <div className={`${styles.checkboxContainer} ${styles.lastCheckbox}`}>
                         <label>
                             <input
                                 type="checkbox"
@@ -256,9 +209,9 @@ const handleSubmit = async (e) => {
                                 onChange={handleCheckboxChange}
                             />
                             (선택) 홍보성 정보 수신에 동의합니다.{" "}
-                            <a className={styles.policy} href="https://openai.com/policies/terms-of-use/" target="_blank" rel="noopener noreferrer">
+                            {/* <a className={styles.policy} href="https://openai.com/policies/terms-of-use/" target="_blank" rel="noopener noreferrer">
                                 자세히 보기
-                            </a>
+                            </a> */}
                         </label>
                     </div>
 
@@ -266,21 +219,6 @@ const handleSubmit = async (e) => {
                         회원가입
                     </button>
                 </form>
-                {/* <p className={styles.loginText}>
-                    이미 계정이 있으신가요?{" "}
-                    <span className={styles.loginLink} onClick={() => navigate("/login")}>
-                        로그인
-                    </span>
-                </p>
-                <div className={styles.bottom}>
-                    <a className={styles.loginLink} href="https://openai.com/policies/terms-of-use/">
-                        <span>이용약관     </span>
-                    </a>
-                    |
-                    <a className={styles.loginLink} href="https://openai.com/policies/privacy-policy/">
-                        <span>     개인정보 보호 정책</span>
-                    </a>
-                </div> */}
             </div>
         </div>
     );

@@ -8,6 +8,7 @@ export default function Home() {
         <div>
             <button className="login-button" onClick={() => navigate("/login")}>로그인</button>
             <button className="login-button" onClick={() => navigate("/signup")}>회원가입</button>
+            <button className="login-button" onClick={() => navigate("/chat")}>채팅</button>
         </div>
     );
 }

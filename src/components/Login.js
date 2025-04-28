@@ -55,16 +55,18 @@ function Login() {
         //     setIsLoading(false);
         // }
     };
- 
-return (
-    <div className={styles.container}>
-        <div className={styles.signupBox}>
-            <h2 className={styles.title}>과시리</h2>
-            <form onSubmit={handleSubmit} className={styles.form}>
 
-                <div>
-                    <input
-                        type="email"
+    return (
+        <div className={styles.container}>
+            <div className={styles.signupBox}>
+                <div className="logo_title">
+                    <img src="/logo.png" alt="로고" />
+                </div>
+                <form onSubmit={handleSubmit} className={styles.form}>
+
+                    <div className={styles.inputGroup}>
+                        <input
+                            type="email"
                         name="email"
                         value={formData.email}
                         onChange={handleChange}
@@ -74,7 +76,7 @@ return (
                     />
                 </div>
 
-                <div>
+                <div className={styles.inputGroup}>
                     <input
                         type="password"
                         name="password"
