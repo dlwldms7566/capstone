@@ -3,8 +3,6 @@ import styles from "../styles/Chat.module.css";
 import { LuSquarePen } from "react-icons/lu";
 import { IoIosArrowDown } from "react-icons/io";
 import { FaPlus } from "react-icons/fa6";
-import { TbWorld } from "react-icons/tb";
-import { LiaLightbulb } from "react-icons/lia";
 import { PiWaveformBold } from "react-icons/pi";
 import { FaArrowUp } from "react-icons/fa6";
 import { AiOutlineCode } from "react-icons/ai";
@@ -12,6 +10,11 @@ import { HiOutlineDocumentText } from "react-icons/hi";
 import { HiOutlineEye } from "react-icons/hi";
 import { RiGraduationCapLine } from "react-icons/ri";
 import { useNavigate } from "react-router-dom";
+import { TbWorldSearch } from 'react-icons/tb'; 
+import { MdOutlineSupportAgent } from 'react-icons/md'; 
+import { FaBalanceScale } from 'react-icons/fa';
+import { HiOutlineDocumentSearch } from 'react-icons/hi'; 
+import { PiScalesDuotone } from 'react-icons/pi';
 
 function Chat() {
 
@@ -131,7 +134,9 @@ function Chat() {
 
   return (
     <div>
-      <img className={styles.logo} src="/logo.png" alt="로고" />
+      <a href="/">
+        <img className={styles.logo} src="/logo.png" alt="로고" />
+      </a>
 
       <button className={styles.LogIn} onClick={handleNewChat}>새 채팅</button>
       <button className={styles.Join} onClick={() => navigate("/signup")}>채팅 기록</button >
@@ -151,7 +156,6 @@ function Chat() {
 
       <div className={styles.ChatInputContainer}>
         <div className={styles.InputContainer}>
-          {/* 첨부 버튼 */}
 
           {/* 입력창 */}
           <input
@@ -173,6 +177,7 @@ function Chat() {
         {/* 가운데 선 */}
         <div className={styles.Divider}></div>
 
+        {/* 첨부 버튼 */}
         <div className={styles.ButtonContainer}>
         <label htmlFor="fileUpload" className={styles.AttachButton}>
           <img src="/attach.png" alt="Attach" className={styles.attachIcon} />
@@ -185,28 +190,15 @@ function Chat() {
         />
 
         {/* 나머지 버튼들 */}
-        <button className={styles.search}><TbWorld className={styles.searchIcon2} />유사 판례 보기</button>
-        <button className={styles.reason}><LiaLightbulb className={styles.reasonIcon} />대처 방법 보기</button>
-        <button className={styles.reason}><LiaLightbulb className={styles.reasonIcon} />관련 법률 보기</button>
+        <button className={styles.search}><HiOutlineDocumentSearch className={styles.searchIcon2} />유사 판례 보기</button>
+        <button className={styles.reason}><MdOutlineSupportAgent className={styles.reasonIcon} />대처 방법 보기</button>
+        <button className={styles.reason}><FaBalanceScale className={styles.lawIcon} />관련 법률 보기</button>
         </div>
       </div>
 
-
-      {!isChatting && (
-        <>
-          {/* <div className={styles.ChatMenu}>
-        <button><AiOutlineCode className={styles.codeIcon}/>코딩</button >
-        <button><HiOutlineDocumentText className={styles.textIcon}/>텍스트 요약</button >
-        <button><HiOutlineEye className={styles.imageIcon}/>이미지 분석</button >
-        <button><LiaLightbulb className={styles.planIcon}/>계획 짜기</button >
-        <button><RiGraduationCapLine className={styles.adviceIcon}/>조언 구하기</button >
-        <button>더 보기</button >
-      </div> */}
-          <p className={styles.refer}>
-            과시리의 판단에 오류가 있을 수 있으며 법적 효력이 없습니다.
-          </p>
-        </>
-      )}
+      <p className={styles.refer}>
+        과시리의 판단에 오류가 있을 수 있으며 법적 효력이 없습니다.
+      </p>
     </div>
   );
 }

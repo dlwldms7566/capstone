@@ -68,17 +68,13 @@ body {
   position: absolute;
   top: 10px;
   left: 53px;
-  color: #606060;
   background: transparent;
   border: none;
-  font-size: 17.5px;
-  font-weight: 700;
   display: flex;
   align-items: center;
   gap: 5px;
   padding: 10px 10px;
   cursor: pointer;
-  border-radius: 5px;
   transition: background 0.2s ease-in-out;
 }
 
@@ -123,7 +119,7 @@ body {
   width: 100%;
   transform: translateX(-50%);
   max-width: 750px;
-  height: 103px;
+  height: 104px;
   background: white;
   border-top: 1px solid #ccc;
   padding: 6px;
@@ -132,13 +128,11 @@ body {
 }
 
 .ChatInput {
-  flex: 1;
-  /* align-self: flex-start; */
   padding: 10px;
   border: none;
-  border-radius: 5px;
   outline: none;
   font-size: 16px;
+  width: 600px;
 }
 
 .ChatInput::placeholder {
@@ -231,21 +225,19 @@ body {
 }
 
 .SendButton {
-  font-size: 17px;
-  position: absolute;
-  right: 10px;
-  bottom: 10px;
   background: none;
-  color: white;
   border: none;
-  padding: 10px;
-  border-radius: 50%;
   cursor: pointer;
   width: 36px;
   height: 36px;
-  display: flex;
-  justify-content: center;
-  align-items: center;
+  margin-top: 3px;
+  margin-right: 10px;
+}
+
+.SendButton img {
+  width: 20px;
+  height: 20px;
+  cursor: pointer;
 }
 
 .ChatMenu {
@@ -270,36 +262,6 @@ body {
   gap: 5px;
 }
 
-.codeIcon {
-  font-size: 16px;
-  display: inline-block;
-  color: rgb(70, 52, 228);
-}
-
-.textIcon {
-  font-size: 18px;
-  display: inline-block;
-  color: rgb(225, 145, 32);
-}
-
-.imageIcon {
-  font-size: 19px;
-  display: inline-block;
-  color: rgb(85, 67, 249);
-}
-
-.planIcon {
-  font-size: 22px;
-  display: inline-block;
-  color: rgb(223, 190, 143);
-}
-
-.adviceIcon {
-  font-size: 16px;
-  display: inline-block;
-  color: rgb(102, 217, 248);
-}
-
 .refer {
   position: fixed;
   bottom: 5px;
@@ -308,11 +270,7 @@ body {
   text-align: center;
   font-size: 14px;
   color: #6c6c6c;
-}
-
-.refer span {
-  color: #000000;
-  text-decoration: underline;
+  font-size: 12px;
 }
 
 .ChatContainer {
@@ -366,13 +324,20 @@ body {
 .InputContainer {
   display: flex;
   align-items: center;
+  justify-content: space-between;
   width: 100%;
+}
+
+.AttachButton{
+  width: 24px;
+  height: 24px;
 }
 
 .AttachButton img {
   width: 24px;
   height: 24px;
   cursor: pointer;
+  margin-left: 10px;
 }
 
 .sendIcon {
@@ -389,4 +354,33 @@ body {
 
 .ButtonContainer {
   display: flex;
+  gap: 20px;
+  justify-content: flex-start;
+  margin-top: 10px;
+  flex-wrap: wrap;
+  width: 100%;
+  max-width: 750px;
+  box-sizing: border-box;
+  height: 40px;
 }
+
+.ButtonContainer button {
+  padding: 10px; 
+  font-size: 14px;
+  height: 32px;
+  flex: none;
+  min-width: 100px;
+  box-sizing: border-box;
+}
+
+.reasonIcon {
+  width: 18px;
+  height: 18px;
+}
+
+.lawIcon {
+  width: 18px;
+  height: 18px;
+  margin-right: 3px;
+}
+
