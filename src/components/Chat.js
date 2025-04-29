@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useRef } from "react";
+import axios from 'axios';
 import styles from "../styles/Chat.module.css";
 import { LuSquarePen } from "react-icons/lu";
 import { IoIosArrowDown } from "react-icons/io";
@@ -10,11 +11,9 @@ import { HiOutlineDocumentText } from "react-icons/hi";
 import { HiOutlineEye } from "react-icons/hi";
 import { RiGraduationCapLine } from "react-icons/ri";
 import { useNavigate } from "react-router-dom";
-import { TbWorldSearch } from 'react-icons/tb'; 
-import { MdOutlineSupportAgent } from 'react-icons/md'; 
+import { MdOutlineSupportAgent } from 'react-icons/md';
 import { FaBalanceScale } from 'react-icons/fa';
-import { HiOutlineDocumentSearch } from 'react-icons/hi'; 
-import { PiScalesDuotone } from 'react-icons/pi';
+import { HiOutlineDocumentSearch } from 'react-icons/hi';
 
 function Chat() {
 
@@ -75,62 +74,56 @@ function Chat() {
     setIsLoading(true);
   };
 
-  // const handleSendMessage = async () => {
-  //   if (!input.trim() || isLoading) return;
+  const handleFileUpload = async (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
 
-  //   setIsChatting(true);
+    setIsLoading(true);
 
-    // const newMessage = { role: 'user', content: input.trim() };
-    // setInput('');  // 입력 필드를 초기화
-    // setMessages(prev => [...prev, newMessage]);
-    // setIsLoading(true);
+    const formData = new FormData();
+    formData.append("file", file);
 
-    // try {
-    //   if (!token.current) {
-    //     throw new Error('인증 토큰이 없습니다.');
-    //   }
+    try {
+      if (!token.current) {
+        throw new Error('인증 토큰이 없습니다.');
+      }
 
-    //   const response = await fetch('http://172.16.41.240:8080/query', {
-    //     method: 'POST',
-    //     headers: {
-    //       'Content-Type': 'application/json',
-    //       'Authorization': `Bearer ${token.current}`
-    //     },
-    //     body: JSON.stringify({ requestMessage: newMessage.content })
-    //   });
+      const response = await axios.post(
+        'http://172.16.41.240:8080/video/upload',
+        formData,
+        {
+          headers: {
+            'Authorization': `Bearer ${token.current}`,
+            'Content-Type': 'multipart/form-data',
+          }
+        }
+      );
 
-    //   if (!mounted.current) return;
+      if (!response.data.success) {
+        throw new Error('파일 업로드에 실패했습니다.');
+      }
 
-    //   if (!response.ok) {
-    //     throw new Error('서버 응답이 올바르지 않습니다.');
-    //   }
-
-    //   const result = await response.json();
-    //   console.log(result)
-    //   if (!mounted.current) return;
-
-    //   if (result.success || result.responseMessage) {
-    //     setMessages(prev => [...prev, {
-    //       role: 'ai',
-    //       content: result.responseMessage
-  //     }]);
-  //   } else {
-  //     throw new Error('응답 메시지를 받지 못했습니다.');
-  //   }
-  // } catch (error) {
-  //   console.error('Error:', error);
-  //   if (mounted.current) {
-  //     setMessages(prev => [...prev, {
-  //       role: 'ai',
-  //       content: `오류가 발생했습니다: ${error.message}`
-  //     }]);
-  //   }
-  // } finally {
-  //   if (mounted.current) {
-  //     setIsLoading(false);
-  //   }
-  // }
-  // };
+      // Update the messages with AI's response or acknowledgment
+      setMessages(prev => [
+        ...prev,
+        {
+          role: 'AI',
+          content: '파일이 성공적으로 업로드되었습니다. 추가적인 질문이 있으시면 알려주세요.'
+        }
+      ]);
+    } catch (error) {
+      console.error('Error uploading file:', error);
+      setMessages(prev => [
+        ...prev,
+        {
+          role: 'AI',
+          content: `파일 업로드 중 오류가 발생했습니다: ${error.message}`
+        }
+      ]);
+    } finally {
+      setIsLoading(false);
+    }
+  };
 
   return (
     <div>
@@ -141,15 +134,27 @@ function Chat() {
       <button className={styles.LogIn} onClick={handleNewChat}>새 채팅</button>
       <button className={styles.Join} onClick={() => navigate("/signup")}>채팅 기록</button >
 
-      {isChatting && (
+      {messages.length > 0 && (
         <div className={styles.ChatContainer} ref={chatContainerRef}>
           {messages.map((message, index) => (
             <div
-              key={index}
+            key={index}
+            className={`${styles.messageWrapper} ${message.role === 'AI' ? styles.aiWrapper : styles.userWrapper}`}
+          >
+            {message.role === 'AI' && (
+              <img src="/ai.png" alt="AI" className={styles.avatar} />
+            )}
+            
+            <div
               className={`${styles.message} ${message.role === 'AI' ? styles.aiMessage : styles.userMessage}`}
             >
-              {message.content}
+              {message.isCustom ? message.content : <span>{message.content}</span>}
             </div>
+        
+            {message.role === 'user' && (
+              <img src="/user.png" alt="User" className={styles.avatar} />
+            )}
+          </div>
           ))}
         </div>
       )}

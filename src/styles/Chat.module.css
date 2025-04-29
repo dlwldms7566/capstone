@@ -1,6 +1,7 @@
 body {
   font-family: "Arial", sans-serif;
-  background-color: white;
+  background-color: rgba(238, 238, 238, 0.3);
+
 }
 
 .ChatIcon {
@@ -140,7 +141,6 @@ body {
 }
 
 .attach {
-  position: absolute;
   bottom: 10px;
   left: 10px;
   color: rgb(99, 99, 99);
@@ -163,7 +163,6 @@ body {
 }
 
 .search {
-  position: absolute;
   bottom: 10px;
   left: 80px;
   color: rgb(99, 99, 99);
@@ -184,7 +183,6 @@ body {
 }
 
 .reason {
-  position: absolute;
   bottom: 10px;
   left: 155px;
   color: rgb(99, 99, 99);
@@ -202,26 +200,6 @@ body {
   font-size: 22px;
   display: inline-block;
   transform: translateX(-2px);
-}
-
-.VoiceButton {
-  position: absolute;
-  right: 10px;
-  bottom: 10px;
-  background: #000000;
-  color: white;
-  border: none;
-  padding: 8px 13px;
-  border-radius: 30px;
-  cursor: pointer;
-  font-size: 13px;
-  font-weight: bold;
-}
-
-.voiceIcon {
-  font-size: 18px;
-  display: inline-block;
-  transform: translateX(-2px) translateY(2px);
 }
 
 .SendButton {
@@ -303,22 +281,26 @@ body {
   margin-bottom: 10px;
   padding: 3px 18px;
   border-radius: 25px;
-  display: block;
+  display: flex;
   max-width: fit-content;
   word-wrap: break-word;
   width: auto;
   line-height: 0.5;
 }
 
-.message.user {
-  background-color: #f1f1f1;
+.userMessage {
+  background-color: #2555BC;
+  color: white;
   text-align: right;
   margin-left: auto;
+  padding: 15px;
 }
 
-.message.ai {
+.aiMessage {
+  background-color: white;
   text-align: left;
   margin-right: auto;
+  padding: 15px;
 }
 
 .InputContainer {
@@ -354,7 +336,7 @@ body {
 
 .ButtonContainer {
   display: flex;
-  gap: 20px;
+  gap: 10px;
   justify-content: flex-start;
   margin-top: 10px;
   flex-wrap: wrap;
@@ -362,6 +344,7 @@ body {
   max-width: 750px;
   box-sizing: border-box;
   height: 40px;
+  align-items: center;
 }
 
 .ButtonContainer button {
@@ -384,3 +367,24 @@ body {
   margin-right: 3px;
 }
 
+.messageWrapper {
+  display: flex;
+  align-items: flex-start;
+  margin-bottom: 10px;
+}
+
+.aiWrapper {
+  justify-content: flex-start; /* AI는 왼쪽 정렬 */
+}
+
+.userWrapper {
+  justify-content: flex-end; /* 유저는 오른쪽 정렬 */
+}
+
+.avatar {
+  width: 45px;
+  height: 45px;
+  object-fit: cover;
+  border-radius: 50%;
+  margin: 0 8px;
+}
