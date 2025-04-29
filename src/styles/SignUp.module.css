@@ -13,7 +13,7 @@
     justify-content: center;
     align-items: center;
     flex-direction: column;
-    background-color: white;
+    background-color: transparent;
     padding: 2rem;
     width: 320px;
 }
@@ -83,7 +83,7 @@
     border-top: 0.8px solid rgb(180, 180, 180);
     font-weight: 300;
     padding-top: 30px;
-    color: rgb(180, 180, 180);
+    color: #9E9E9E;
 }
 
 .policy {
@@ -103,7 +103,7 @@
     border-radius: 4px;      /* 모서리 둥글게 (선택) */
     appearance: none;        /* 브라우저 기본 체크박스 스타일 제거 */
     -webkit-appearance: none; /* 사파리용 */
-    background-color: white;
+    background-color: transparent;
     cursor: pointer;
     vertical-align: middle;
   }

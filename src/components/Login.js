@@ -19,42 +19,37 @@ function Login() {
     const handleSubmit = async (e) => {
         e.preventDefault();
         setIsLoading(true);
-        // try {
-        //     const requestData = { 
-        //         email: formData.email, 
-        //         password: formData.password 
-        //     };
-        //     const response = await fetch('http://172.16.41.240:8080/auth/signin', {
-        //         method: 'POST',
-        //         headers: {
-        //             'Content-Type': 'application/json',
-        //         },
-        //         body: JSON.stringify(requestData),
-        //     });
-
-        //     const responseData = await response.json();
-        //     console.log(responseData)
-        //     if (response.ok) {
-        //         localStorage.setItem('token', responseData.data.token);
-        //         // 상태 초기화
-        //         setFormData({ email: "", password: "" });
-        //         setIsLoading(false);
-
-        //         // 성공 메시지 표시
-        //         alert('로그인 성공!');
-
-        //         // 직접 페이지 이동
-        //         window.location.href = '/chat';
-        //     } else {
-        //         alert(`로그인 실패: ${responseData.message || '이메일 또는 비밀번호가 올바르지 않습니다.'}`);
-        //         setIsLoading(false);
-        //     }
-        // } catch (error) {
-        //     console.error('로그인 에러:', error);
-        //     alert('로그인 처리 중 오류가 발생했습니다.');
-        //     setIsLoading(false);
-        // }
-    };
+        try {
+            const requestData = { 
+                email: formData.email, 
+                password: formData.password 
+            };
+            const response = await fetch('http://172.16.41.240:8080/auth/signIn', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(requestData),
+            });
+    
+            const responseData = await response.json();
+            console.log(responseData)
+            if (response.ok) {
+                localStorage.setItem('token', responseData.data.token);
+                setFormData({ email: "", password: "" });
+                setIsLoading(false);
+                alert('로그인 성공!');
+                window.location.href = '/chat';
+            } else {
+                alert(`로그인 실패: ${responseData.message || '이메일 또는 비밀번호가 올바르지 않습니다.'}`);
+                setIsLoading(false);
+            }
+        } catch (error) {
+            console.error('로그인 에러:', error);
+            alert('로그인 처리 중 오류가 발생했습니다.');
+            setIsLoading(false);
+        }
+    };    
 
     return (
         <div className={styles.container}>
@@ -101,10 +96,6 @@ function Login() {
             <div className={styles.bottom}>
                 <a className={styles.loginLink} href="https://openai.com/policies/terms-of-use/">
                     <span>비밀번호 찾기 </span>
-                </a>
-                |
-                <a className={styles.loginLink} href="https://openai.com/policies/privacy-policy/">
-                    <span> 아이디 찾기</span>
                 </a>
                 |
                 <a className={styles.loginLink} href="https://openai.com/policies/privacy-policy/">

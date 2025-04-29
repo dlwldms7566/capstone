@@ -77,17 +77,25 @@ function Chat() {
   const handleFileUpload = async (e) => {
     const file = e.target.files[0];
     if (!file) return;
-
+  
+    const fileURL = URL.createObjectURL(file); // 이 줄은 file 선언 후에 있어야 함
+    const videoMessage = {
+      role: 'user',
+      content: fileURL,
+      isVideo: true,
+    };
+  
+    setMessages(prev => [...prev, videoMessage]);
     setIsLoading(true);
-
+  
     const formData = new FormData();
     formData.append("file", file);
-
+  
     try {
       if (!token.current) {
         throw new Error('인증 토큰이 없습니다.');
       }
-
+  
       const response = await axios.post(
         'http://172.16.41.240:8080/video/upload',
         formData,
@@ -98,12 +106,11 @@ function Chat() {
           }
         }
       );
-
+  
       if (!response.data.success) {
         throw new Error('파일 업로드에 실패했습니다.');
       }
-
-      // Update the messages with AI's response or acknowledgment
+  
       setMessages(prev => [
         ...prev,
         {
@@ -123,7 +130,7 @@ function Chat() {
     } finally {
       setIsLoading(false);
     }
-  };
+  };  
 
   return (
     <div>
@@ -141,16 +148,20 @@ function Chat() {
             key={index}
             className={`${styles.messageWrapper} ${message.role === 'AI' ? styles.aiWrapper : styles.userWrapper}`}
           >
-            {message.role === 'AI' && (
-              <img src="/ai.png" alt="AI" className={styles.avatar} />
-            )}
-            
-            <div
-              className={`${styles.message} ${message.role === 'AI' ? styles.aiMessage : styles.userMessage}`}
-            >
-              {message.isCustom ? message.content : <span>{message.content}</span>}
-            </div>
-        
+              {message.role === 'AI' && (
+                <img src="/ai.png" alt="AI" className={styles.avatar} />
+              )}
+
+              <div
+                className={`${styles.message} ${message.role === 'AI' ? styles.aiMessage : styles.userMessage}`}
+              >
+                {message.isVideo ? (
+                  <video controls width="250" src={message.content} className={styles.videoPreview} />
+                ) : (
+                  <span>{message.content}</span>
+                )}
+              </div>
+
             {message.role === 'user' && (
               <img src="/user.png" alt="User" className={styles.avatar} />
             )}
