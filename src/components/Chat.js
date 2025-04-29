@@ -110,23 +110,23 @@ function Chat() {
     //     setMessages(prev => [...prev, {
     //       role: 'ai',
     //       content: result.responseMessage
-    //     }]);
-    //   } else {
-    //     throw new Error('응답 메시지를 받지 못했습니다.');
-    //   }
-    // } catch (error) {
-    //   console.error('Error:', error);
-    //   if (mounted.current) {
-    //     setMessages(prev => [...prev, {
-    //       role: 'ai',
-    //       content: `오류가 발생했습니다: ${error.message}`
-    //     }]);
-    //   }
-    // } finally {
-    //   if (mounted.current) {
-    //     setIsLoading(false);
-    //   }
-    // }
+  //     }]);
+  //   } else {
+  //     throw new Error('응답 메시지를 받지 못했습니다.');
+  //   }
+  // } catch (error) {
+  //   console.error('Error:', error);
+  //   if (mounted.current) {
+  //     setMessages(prev => [...prev, {
+  //       role: 'ai',
+  //       content: `오류가 발생했습니다: ${error.message}`
+  //     }]);
+  //   }
+  // } finally {
+  //   if (mounted.current) {
+  //     setIsLoading(false);
+  //   }
+  // }
   // };
 
   return (
@@ -139,39 +139,58 @@ function Chat() {
       {isChatting && (
         <div className={styles.ChatContainer} ref={chatContainerRef}>
           {messages.map((message, index) => (
-          <div
-            key={index}
-            className={`${styles.message} ${message.role === 'AI' ? styles.aiMessage : styles.userMessage}`}
-          >
-            {message.content}
-          </div>
-        ))}
+            <div
+              key={index}
+              className={`${styles.message} ${message.role === 'AI' ? styles.aiMessage : styles.userMessage}`}
+            >
+              {message.content}
+            </div>
+          ))}
         </div>
       )}
+
       <div className={styles.ChatInputContainer}>
-        <input
-          type="text"
-          className={styles.ChatInput}
-          ref={inputRef}
-          value={input}
-          onChange={(e) => setInput(e.target.value)}
-          placeholder="아래 아이콘을 눌러 블랙박스 영상을 업로드하세요"
-          onKeyPress={(e) => e.key === "Enter" && handleSendMessage()}
-        />
-        <button className={styles.attach}><FaPlus className={styles.attachIcon} />첨부</button >
-        <button className={styles.search}><TbWorld className={styles.searchIcon2} />유사 판례 보기</button >
-        <button className={styles.reason}><LiaLightbulb className={styles.reasonIcon} />대처 방법 보기</button >
-        <button className={styles.reason}><LiaLightbulb className={styles.reasonIcon} />관련 법률 보기</button >
-        {input ? (
+        <div className={styles.InputContainer}>
+          {/* 첨부 버튼 */}
+
+          {/* 입력창 */}
+          <input
+            type="text"
+            className={styles.ChatInput}
+            ref={inputRef}
+            value={input}
+            onChange={(e) => setInput(e.target.value)}
+            placeholder="아래 아이콘을 눌러 블랙박스 영상을 업로드하세요"
+            onKeyPress={(e) => e.key === "Enter" && handleSendMessage()}
+          />
+
+          {/* Send 버튼 */}
           <button className={styles.SendButton} onClick={handleSendMessage}>
-            <FaArrowUp />
+            <img src="/send.png" alt="Send" className={styles.sendIcon} />
           </button>
-        ) : (
-          <button className={styles.VoiceButton}>
-            <PiWaveformBold className={styles.voiceIcon} /> Voice
-          </button>
-        )}
+        </div>
+
+        {/* 가운데 선 */}
+        <div className={styles.Divider}></div>
+
+        <div className={styles.ButtonContainer}>
+        <label htmlFor="fileUpload" className={styles.AttachButton}>
+          <img src="/attach.png" alt="Attach" className={styles.attachIcon} />
+        </label>
+        <input
+          id="fileUpload"
+          type="file"
+          style={{ display: 'none' }}
+          onChange={(e) => handleFileUpload(e)}
+        />
+
+        {/* 나머지 버튼들 */}
+        <button className={styles.search}><TbWorld className={styles.searchIcon2} />유사 판례 보기</button>
+        <button className={styles.reason}><LiaLightbulb className={styles.reasonIcon} />대처 방법 보기</button>
+        <button className={styles.reason}><LiaLightbulb className={styles.reasonIcon} />관련 법률 보기</button>
+        </div>
       </div>
+
 
       {!isChatting && (
         <>
