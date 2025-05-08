@@ -1,5 +1,4 @@
 import React, { useState, useEffect, useRef } from "react";
-import axios from 'axios';
 import styles from "../styles/Chat.module.css";
 import { useNavigate } from "react-router-dom";
 import { MdOutlineSupportAgent } from 'react-icons/md';
@@ -7,7 +6,6 @@ import { FaBalanceScale } from 'react-icons/fa';
 import { HiOutlineDocumentSearch } from 'react-icons/hi';
 
 function Chat() {
-  const [isLoading, setIsLoading] = useState(false);
   const [messages, setMessages] = useState([]);
   const [input, setInput] = useState("");
   const [step, setStep] = useState("initial");
@@ -15,13 +13,10 @@ function Chat() {
   const [roadType, setRoadType] = useState(null);
   const [selectedOption, setSelectedOption] = useState("");
   const [inputOptions, setInputOptions] = useState([]);
-  const [aiResultId, setAiResultId] = useState(null);
-  const userId = 1; // 실제 로그인 정보를 사용한다면 동적으로 설정
-
+  const userId = 1;
   const inputRef = useRef(null);
   const chatContainerRef = useRef(null);
   const navigate = useNavigate();
-  const token = useRef(null);
   const mounted = useRef(false);
 
   useEffect(() => {
@@ -37,11 +32,6 @@ function Chat() {
   }, []);
 
   useEffect(() => {
-    const storedToken = localStorage.getItem('token');
-    if (storedToken) token.current = storedToken;
-  }, []);
-
-  useEffect(() => {
     if (inputRef.current) inputRef.current.focus();
   }, []);
 
@@ -51,88 +41,92 @@ function Chat() {
     }
   }, [messages]);
 
-  const handleOptionSubmit = async () => {
+  const handleOptionSubmit = () => {
     if (!selectedOption) return;
-    setMessages(prev => [...prev, { role: 'user', content: selectedOption }]);
-
     if (step === 'awaitingAccidentType') {
       setAccidentType(selectedOption);
       setSelectedOption("");
       setInputOptions(['교차로', '고속도로', '일반도로']);
       setStep("awaitingRoadType");
-      setMessages(prev => [...prev, { role: 'AI', content: '사고가 발생한 도로 유형을 선택해주세요.' }]);
+      setMessages(prev => [
+        ...prev,
+        { role: 'user', content: selectedOption },
+        { role: 'AI', content: '사고가 발생한 도로 유형을 선택해주세요.' }
+      ]);
     } else if (step === 'awaitingRoadType') {
-      const finalAccidentType = accidentType;
-      const finalRoadType = selectedOption;
-      setRoadType(finalRoadType);
+      setRoadType(selectedOption);
+      setMessages(prev => [
+        ...prev,
+        { role: 'user', content: selectedOption },
+        { role: 'AI', content: '정보가 성공적으로 전송되었습니다. 블랙박스 영상을 업로드해주세요.' }
+      ]);
       setSelectedOption("");
       setInputOptions([]);
-
-      try {
-        const res = await axios.post('http://172.16.41.240:8080/ai-result/init', {
-          accident_type: finalAccidentType,
-          road_type: finalRoadType
-        }, {
-          headers: {
-            'Authorization': `Bearer ${token.current}`,
-            'Content-Type': 'application/json'
-          }
-        });
-
-        setAiResultId(res.data.id);
-        setMessages(prev => [...prev, {
-          role: 'AI',
-          content: '정보가 성공적으로 전송되었습니다. 블랙박스 영상을 업로드해주세요.'
-        }]);
-        setStep("awaitingVideoUpload");
-      } catch (err) {
-        setMessages(prev => [...prev, {
-          role: 'AI',
-          content: `오류가 발생했습니다: ${err.message}`
-        }]);
-      }
+      setStep("awaitingVideoUpload");
     }
   };
 
   const handleFileUpload = async (e) => {
     const file = e.target.files[0];
-    if (!file || !aiResultId) return;
+    if (!file) return;
 
-    setMessages(prev => [...prev, { role: 'user', content: file.name, isVideo: true }]);
-    setMessages(prev => [...prev, { role: 'AI', content: '영상 분석 중입니다...' }]);
+    const blobURL = URL.createObjectURL(file);
+    const dummyResult = {
+      id: 42,
+      road_type: roadType,
+      accident_type: accidentType === '자동차 대 보행자' ? '차대보' : '차대차',
+      fault_ratio: { A: 30, B: 70 },
+      labels_detected: { car: true, pedestrian: true }
+    };
 
-    const formData = new FormData();
-    formData.append("file", file);
-    formData.append("userID", String(userId));
-    formData.append("ai_result_id", String(aiResultId));
-
-    try {
-      const res = await axios.post('http://172.16.41.240:8080/video/upload', formData, {
-        headers: {
-          'Authorization': `Bearer ${token.current}`,
-          'Content-Type': 'multipart/form-data'
-        }
-      });
-
-      setMessages(prev => [...prev, {
+    setMessages(prev => [
+      ...prev,
+      { role: 'user', content: blobURL, isVideo: true },
+      { role: 'AI', content: '분석이 완료되었습니다. 결과를 확인해주세요.' },
+      {
         role: 'AI',
-        content: '분석이 완료되었습니다. 결과를 확인해주세요.'
-      }]);
-
-      // 결과 데이터 활용 시: res.data.video_id, res.data.ai_result.fault_ratio 등
-
-    } catch (error) {
-      setMessages(prev => [...prev, {
-        role: 'AI',
-        content: `영상 업로드 중 오류가 발생했습니다: ${error.message}`
-      }]);
-    }
+        content: (
+          <div style={{ maxWidth: '240px', marginTop: '10px', textAlign: 'center' }}>
+            <p style={{ fontWeight: 'bold' }}>과실 비율</p>
+            <svg width="180" height="180" viewBox="0 0 36 36">
+              <circle
+                className={styles.graph_bg}
+                cx="18"
+                cy="18"
+                r="14"
+                fill="none"
+                strokeWidth="4.5"
+              />
+              <circle
+                className={styles.graph_fg}
+                cx="18"
+                cy="18"
+                r="14"
+                fill="none"
+                strokeWidth="4.5"
+                strokeDasharray={`${dummyResult.fault_ratio.A} ${100 - dummyResult.fault_ratio.A}`}
+                strokeDashoffset="25"
+                transform="rotate(-90 18 18)"
+              />
+            </svg>
+            <div style={{ marginTop: '8px' }}>
+              A: {dummyResult.fault_ratio.A}%<br />
+              B: {dummyResult.fault_ratio.B}%
+            </div>
+            <div style={{ marginTop: '12px', fontSize: '14px' }}>
+              <p><strong>사고 유형:</strong> {dummyResult.accident_type}</p>
+              <p><strong>도로 유형:</strong> {dummyResult.road_type}</p>
+              <p><strong>탐지된 객체:</strong> {Object.keys(dummyResult.labels_detected).filter(k => dummyResult.labels_detected[k]).join(', ')}</p>
+            </div>
+          </div>
+        )
+      }
+    ]);
   };
 
   const handleSendMessage = () => {
-    if (!input.trim() || isLoading) return;
-    const newMessage = { role: 'user', content: input.trim() };
-    setMessages(prev => [...prev, newMessage]);
+    if (!input.trim()) return;
+    setMessages(prev => [...prev, { role: 'user', content: input.trim() }]);
     setInput('');
   };
 
@@ -148,19 +142,21 @@ function Chat() {
       <div className={styles.ChatContainer} ref={chatContainerRef}>
         {messages.map((message, index) => (
           <div key={index} className={`${styles.messageWrapper} ${message.role === 'AI' ? styles.aiWrapper : styles.userWrapper}`}>
-            {message.role === 'AI' && (
-              <img src="/ai.png" alt="AI" className={styles.avatar} />
-            )}
+            {message.role === 'AI' && <img src="/ai.png" alt="AI" className={styles.avatar} />}
             <div className={`${styles.message} ${message.role === 'AI' ? styles.aiMessage : styles.userMessage}`}>
               {message.isVideo ? (
-                <video controls width="250" src={URL.createObjectURL(new Blob([message.content]))} className={styles.videoPreview} />
+                <video
+                  controls
+                  width="250"
+                  src={message.content}
+                  className={styles.videoPreview}
+                  poster="/video_thumbnail.png"
+                />
               ) : (
-                <span>{message.content}</span>
+                typeof message.content === 'string' ? <span>{message.content}</span> : message.content
               )}
             </div>
-            {message.role === 'user' && (
-              <img src="/user.png" alt="User" className={styles.avatar} />
-            )}
+            {message.role === 'user' && <img src="/user.png" alt="User" className={styles.avatar} />}
           </div>
         ))}
       </div>
@@ -215,7 +211,7 @@ function Chat() {
             id="fileUpload"
             type="file"
             style={{ display: 'none' }}
-            onChange={(e) => handleFileUpload(e)}
+            onChange={handleFileUpload}
           />
 
           <button className={styles.search}><HiOutlineDocumentSearch className={styles.searchIcon2} />유사 판례 보기</button>

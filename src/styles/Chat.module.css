@@ -412,3 +412,14 @@ body {
   margin-right: 12px;
   color: #606060;
 }
+
+.graph_bg {
+  stroke: #79D9C7; 
+  opacity: 0.9;
+  /* #2A5CBF #2A5CBF */
+}
+
+.graph_fg {
+  stroke: #49B1F2; 
+  opacity: 0.8;
+}
