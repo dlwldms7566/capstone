@@ -308,6 +308,7 @@ body {
   align-items: center;
   justify-content: space-between;
   width: 100%;
+  gap: 12px;
 }
 
 .AttachButton{
@@ -387,4 +388,27 @@ body {
   object-fit: cover;
   border-radius: 50%;
   margin: 0 8px;
+}
+
+.SelectInputWrapper {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+}
+
+.OptionList {
+  display: flex;
+  gap: 10px; /* 선택지 간격 조정 */
+  flex-wrap: wrap;
+  flex: 1;
+}
+
+.radioOption {
+  display: flex;
+  align-items: center;
+  gap: 2px;
+  margin-left: 7.5px;
+  margin-right: 12px;
+  color: #606060;
 }
