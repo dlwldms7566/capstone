@@ -15,6 +15,8 @@ function Chat() {
   const [roadType, setRoadType] = useState(null);
   const [selectedOption, setSelectedOption] = useState("");
   const [inputOptions, setInputOptions] = useState([]);
+  const [aiResultId, setAiResultId] = useState(null);
+  const userId = 1; // 실제 로그인 정보를 사용한다면 동적으로 설정
 
   const inputRef = useRef(null);
   const chatContainerRef = useRef(null);
@@ -49,7 +51,7 @@ function Chat() {
     }
   }, [messages]);
 
-  const handleOptionSubmit = () => {
+  const handleOptionSubmit = async () => {
     if (!selectedOption) return;
     setMessages(prev => [...prev, { role: 'user', content: selectedOption }]);
 
@@ -65,34 +67,65 @@ function Chat() {
       setRoadType(finalRoadType);
       setSelectedOption("");
       setInputOptions([]);
-      submitAccidentInfo(finalAccidentType, finalRoadType);
+
+      try {
+        const res = await axios.post('http://172.16.41.240:8080/ai-result/init', {
+          accident_type: finalAccidentType,
+          road_type: finalRoadType
+        }, {
+          headers: {
+            'Authorization': `Bearer ${token.current}`,
+            'Content-Type': 'application/json'
+          }
+        });
+
+        setAiResultId(res.data.id);
+        setMessages(prev => [...prev, {
+          role: 'AI',
+          content: '정보가 성공적으로 전송되었습니다. 블랙박스 영상을 업로드해주세요.'
+        }]);
+        setStep("awaitingVideoUpload");
+      } catch (err) {
+        setMessages(prev => [...prev, {
+          role: 'AI',
+          content: `오류가 발생했습니다: ${err.message}`
+        }]);
+      }
     }
   };
 
-  const submitAccidentInfo = async (accType, roadType) => {
-    setIsLoading(true);
+  const handleFileUpload = async (e) => {
+    const file = e.target.files[0];
+    if (!file || !aiResultId) return;
+
+    setMessages(prev => [...prev, { role: 'user', content: file.name, isVideo: true }]);
+    setMessages(prev => [...prev, { role: 'AI', content: '영상 분석 중입니다...' }]);
+
+    const formData = new FormData();
+    formData.append("file", file);
+    formData.append("userID", String(userId));
+    formData.append("ai_result_id", String(aiResultId));
+
     try {
-      const res = await axios.post('http://172.16.41.240:8080/video/upload', {
-        accident_type: accType,
-        road_type: roadType
-      }, {
+      const res = await axios.post('http://172.16.41.240:8080/video/upload', formData, {
         headers: {
           'Authorization': `Bearer ${token.current}`,
-          'Content-Type': 'application/json'
+          'Content-Type': 'multipart/form-data'
         }
       });
 
       setMessages(prev => [...prev, {
         role: 'AI',
-        content: '정보가 성공적으로 전송되었습니다. 블랙박스 영상을 업로드해주세요.'
+        content: '분석이 완료되었습니다. 결과를 확인해주세요.'
       }]);
-    } catch (err) {
+
+      // 결과 데이터 활용 시: res.data.video_id, res.data.ai_result.fault_ratio 등
+
+    } catch (error) {
       setMessages(prev => [...prev, {
         role: 'AI',
-        content: `오류가 발생했습니다: ${err.message}`
+        content: `영상 업로드 중 오류가 발생했습니다: ${error.message}`
       }]);
-    } finally {
-      setIsLoading(false);
     }
   };
 
@@ -119,7 +152,11 @@ function Chat() {
               <img src="/ai.png" alt="AI" className={styles.avatar} />
             )}
             <div className={`${styles.message} ${message.role === 'AI' ? styles.aiMessage : styles.userMessage}`}>
-              <span>{message.content}</span>
+              {message.isVideo ? (
+                <video controls width="250" src={URL.createObjectURL(new Blob([message.content]))} className={styles.videoPreview} />
+              ) : (
+                <span>{message.content}</span>
+              )}
             </div>
             {message.role === 'user' && (
               <img src="/user.png" alt="User" className={styles.avatar} />
@@ -178,7 +215,7 @@ function Chat() {
             id="fileUpload"
             type="file"
             style={{ display: 'none' }}
-            onChange={() => {}}
+            onChange={(e) => handleFileUpload(e)}
           />
 
           <button className={styles.search}><HiOutlineDocumentSearch className={styles.searchIcon2} />유사 판례 보기</button>
