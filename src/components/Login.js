@@ -24,7 +24,7 @@ function Login() {
                 email: formData.email, 
                 password: formData.password 
             };
-            const response = await fetch('http://172.16.41.240:8080/auth/signIn', {
+            const response = await fetch('http://172.16.41.240:8080/auth/signin', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',

@@ -50,38 +50,44 @@ function SignUp() {
     };
     
 
-const handleSubmit = async (e) => {
+    const handleSubmit = async (e) => {
         e.preventDefault();
         setIsLoading(true);
-        // try {
-        //     const requestData = {
-        //         email: formData.email,
-        //         password: formData.password,
-        //         name: formData.name
-        //     };
-        //     const response = await fetch('http://172.16.41.240:8080/auth/signup', {
-        //         method: 'POST',
-        //         headers: {
-        //             'Content-Type': 'application/json',
-        //         },
-        //         body: JSON.stringify(requestData),
-        //     });
-        //     console.log(requestData)
-        //     const responseData = await response.json();
-        //     console.log(responseData)
-        //     if (response.ok) {
-        //         alert('회원가입 성공! 로그인해주세요.');
-        //         navigate('/signin');
-        //     } else {
-        //         alert(`회원가입 실패: ${responseData.message || '알 수 없는 오류가 발생했습니다.'}`);
-        //     }
-        // } catch (error) {
-        //     console.error('회원가입 에러:', error);
-        //     alert('회원가입 처리 중 오류가 발생했습니다.');
-        // } finally {
-        //     setIsLoading(false);
-        // }
+    
+        try {
+            const requestData = {
+                email: formData.email,
+                password: formData.password,
+                name: formData.name
+            };
+    
+            const response = await fetch('http://172.16.41.240:8080/auth/signup', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(requestData),
+            });
+    
+            const responseData = await response.json();
+            console.log("서버 응답:", responseData);
+    
+            if (response.ok && responseData.statusCode === 200) {
+                alert('회원가입 성공! 로그인 페이지로 이동합니다.');
+                navigate('/login');
+            } else if (response.status === 409 && responseData.message) {
+                alert(`회원가입 실패: ${responseData.message}`); 
+            } else {
+                alert(`회원가입 실패: ${responseData.message || '알 수 없는 오류가 발생했습니다.'}`);
+            }
+        } catch (error) {
+            console.error('회원가입 에러:', error);
+            alert('서버와 통신 중 오류가 발생했습니다.');
+        } finally {
+            setIsLoading(false);
+        }
     };
+    
 
     return (
         <div className={styles.container}>
