@@ -414,14 +414,15 @@ body {
 }
 
 .graph_bg {
-  stroke: #79D9C7; 
+  stroke: #2A5CBF;
+  /* stroke: #79D9C7;  */
   /* #2246F4 #2A5CBF */
 }
 
 .graph_fg {
-  stroke: #49B1F2; 
+  stroke: #C94C4C; 
+  /* stroke: #49B1F2;  */
 }
-
 
 .faultRatioText {
   margin-top: 8px;
