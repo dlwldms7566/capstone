@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import styles from "../styles/SignUp.module.css";
+import { Link } from 'react-router-dom';
 
 function Login() {
     const [formData, setFormData] = useState({
@@ -98,9 +99,9 @@ function Login() {
                     <span>비밀번호 찾기 </span>
                 </a>
                 |
-                <a className={styles.loginLink} href="https://openai.com/policies/privacy-policy/">
+                <Link className={styles.loginLink} to="/signup">
                     <span> 회원가입</span>
-                </a>
+                </Link>
             </div>
         </div>
     </div>

@@ -8,10 +8,10 @@ function Home() {
       {/* 헤더 */}
       <header className="header">
         <div className="left-group">
-         <img src="/logo.png" alt="과시리 로고" className="logo" />
+         <img src="/logo.png" alt="과시리 로고" className="logo" onClick={() => (window.location.href = '/')} />
          <nav className="nav-links">
-         <Link to="/intro">소개</Link>     
-         <Link to="/faq">FAQ</Link> 
+          <Link to="/intro">소개</Link>     
+          <Link to="/faq">FAQ</Link> 
          </nav>
         </div>
         <div className="right-group">
