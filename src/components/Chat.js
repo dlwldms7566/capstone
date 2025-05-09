@@ -94,13 +94,23 @@ function Chat() {
     if (!file) return;
   
     const formData = new FormData();
-    formData.append("video", file);
-    formData.append("accident_type", accidentType);
-    formData.append("road_type", roadType);
-  
+    formData.append("file", file);
+    formData.append("userID", localStorage.getItem('userID'));  
+    formData.append("ai_result_id", aiResultId);
+
+    const token = localStorage.getItem('token');
+
+    if (!token) {
+      console.error("토큰 없음: 로그인 필요");
+      return;
+    }
+
     try {
       const response = await fetch("http://172.16.41.240:8080/video/upload", {
         method: "POST",
+        headers: {
+          Authorization: `Bearer ${token}`
+        },
         body: formData,
       });
   
