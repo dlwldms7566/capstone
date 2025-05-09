@@ -109,10 +109,11 @@ function Chat() {
                 transform="rotate(-90 18 18)"
               />
             </svg>
-            <div style={{ marginTop: '8px' }}>
-              A: {dummyResult.fault_ratio.A}%<br />
+            <div className={styles.faultRatioText}>
+              A: {dummyResult.fault_ratio.A}%{'\n'}
               B: {dummyResult.fault_ratio.B}%
             </div>
+
             <div style={{ marginTop: '12px', fontSize: '14px' }}>
               <p><strong>사고 유형:</strong> {dummyResult.accident_type}</p>
               <p><strong>도로 유형:</strong> {dummyResult.road_type}</p>
