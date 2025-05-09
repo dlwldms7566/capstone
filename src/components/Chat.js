@@ -1,4 +1,3 @@
-// Chat.js
 import React, { useState, useEffect, useRef } from "react";
 import axios from "axios";
 import styles from "../styles/Chat.module.css";
@@ -16,7 +15,6 @@ function Chat() {
   const [selectedOption, setSelectedOption] = useState("");
   const [inputOptions, setInputOptions] = useState([]);
   const [aiResultId, setAiResultId] = useState(null);
-  const userId = 1;
 
   const inputRef = useRef(null);
   const chatContainerRef = useRef(null);
@@ -49,7 +47,7 @@ function Chat() {
 
     if (step === "awaitingAccidentType") {
       setAccidentType(selectedOption);
-      setMessages((prev) => [
+      setMessages(prev => [
         ...prev,
         { role: "user", content: selectedOption },
         { role: "AI", content: "사고가 발생한 도로 유형을 선택해주세요." }
@@ -57,49 +55,67 @@ function Chat() {
       setSelectedOption("");
       setInputOptions(["교차로", "고속도로", "일반도로"]);
       setStep("awaitingRoadType");
+
     } else if (step === "awaitingRoadType") {
-      setRoadType(selectedOption);
-      setMessages((prev) => [
+      const currentRoadType = selectedOption;
+      setRoadType(currentRoadType);
+      setMessages(prev => [
         ...prev,
-        { role: "user", content: selectedOption },
+        { role: "user", content: currentRoadType },
         { role: "AI", content: "정보가 성공적으로 전송되었습니다. 블랙박스 영상을 업로드해주세요." }
       ]);
       setSelectedOption("");
       setInputOptions([]);
       setStep("awaitingVideoUpload");
 
-      const token = localStorage.getItem('token');
+      const token = localStorage.getItem("token");
       if (!token) {
         console.error("토큰 없음: 로그인 필요");
         return;
       }
 
-      const res = await axios.post(
-        "http://172.16.41.240:8080/ai-result/init",
-        {
-          accident_type: accidentType,
-          road_type: selectedOption,
-        },
-        {
-          headers: {
-            Authorization: `Bearer ${token}`
+      try {
+        const res = await axios.post(
+          "http://172.16.41.240:8080/ai-result/init",
+          {
+            accident_type: accidentType,
+            road_type: currentRoadType,
+          },
+          {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            }
           }
-        }
-      );
+        );
+        setAiResultId(res.data.id);
+      } catch (error) {
+        console.error("AI 결과 초기화 실패:", error);
+        setMessages(prev => [
+          ...prev,
+          { role: "AI", content: "서버에 접속할 수 없습니다. 나중에 다시 시도해주세요." }
+        ]);
+      }
+    }
   };
-};
 
   const handleFileUpload = async (e) => {
     const file = e.target.files[0];
     if (!file) return;
-  
+
+    if (!aiResultId) {
+      setMessages(prev => [
+        ...prev,
+        { role: 'AI', content: 'AI 분석 ID가 없습니다. 도로 유형을 다시 선택해주세요.' }
+      ]);
+      return;
+    }
+
     const formData = new FormData();
     formData.append("file", file);
-    formData.append("userID", localStorage.getItem('userID'));  
+    formData.append("userID", localStorage.getItem('userID'));
     formData.append("ai_result_id", aiResultId);
 
-    const token = localStorage.getItem('token');
-
+    const token = localStorage.getItem("token");
     if (!token) {
       console.error("토큰 없음: 로그인 필요");
       return;
@@ -109,18 +125,16 @@ function Chat() {
       const response = await fetch("http://172.16.41.240:8080/video/upload", {
         method: "POST",
         headers: {
-          Authorization: `Bearer ${token}`
+          Authorization: `Bearer ${token}`,
         },
         body: formData,
       });
-  
-      if (!response.ok) {
-        throw new Error("업로드 실패");
-      }
-  
-      const result = await response.json(); // 백엔드 → 프론트 형식
+
+      if (!response.ok) throw new Error("업로드 실패");
+
+      const result = await response.json();
       const aiResult = result.ai_result;
-  
+
       setMessages(prev => [
         ...prev,
         { role: 'user', content: URL.createObjectURL(file), isVideo: true },
@@ -165,11 +179,10 @@ function Chat() {
       ]);
     }
   };
-  
 
   const handleSendMessage = () => {
     if (!input.trim()) return;
-    setMessages((prev) => [...prev, { role: "user", content: input.trim() }]);
+    setMessages(prev => [...prev, { role: "user", content: input.trim() }]);
     setInput("");
   };
 
@@ -181,6 +194,7 @@ function Chat() {
 
       <button className={styles.LogIn} onClick={() => window.location.reload()}>새 채팅</button>
       <button className={styles.Join} onClick={() => navigate("/signup")}>채팅 기록</button>
+
       <div className={styles.ChatContainer} ref={chatContainerRef}>
         {messages.map((msg, i) => (
           <div key={i} className={`${styles.messageWrapper} ${msg.role === "AI" ? styles.aiWrapper : styles.userWrapper}`}>

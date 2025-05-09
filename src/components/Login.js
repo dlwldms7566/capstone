@@ -37,7 +37,7 @@ function Login() {
             console.log(responseData);
             if (responseData.statusCode === 200) {
                 localStorage.setItem('token', responseData.data.token);
-                localStorage.setItem('userId', responseData.data.userId); // ✅ userId 저장
+                localStorage.setItem('userId', responseData.data.userId); 
                 setFormData({ email: "", password: "" });
                 setIsLoading(false);
                 alert('로그인 성공!');
