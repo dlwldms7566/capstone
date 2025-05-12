@@ -115,12 +115,12 @@ body {
 
 .ChatInputContainer {
   position: fixed;
-  bottom: 50px;
+  bottom: 70px;
   left: 50%;
   width: 100%;
   transform: translateX(-50%);
   max-width: 750px;
-  height: 104px;
+  height: 45px;
   background: white;
   border-top: 1px solid #ccc;
   padding: 6px;
@@ -242,7 +242,7 @@ body {
 
 .refer {
   position: fixed;
-  bottom: 5px;
+  bottom: 15px;
   left: 50%;
   transform: translateX(-50%);
   text-align: center;
