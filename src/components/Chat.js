@@ -98,8 +98,7 @@ function Chat() {
     ]);
 
     const formData = new FormData();
-    formData.append("video", file);
-    formData.append("road_type", roadType);
+    formData.append("file", file);
     formData.append("userID", localStorage.getItem("userID"));
     formData.append("ai_result_id", aiResultId);
 
@@ -335,6 +334,7 @@ function Chat() {
               <label htmlFor="fileUpload" className={styles.AttachButton}>
                 <img src="/attach.png" alt="Attach" className={styles.attachIcon} />
               </label>
+              <input id="fileUpload" type="file" style={{ display: "none" }} onChange={handleFileUpload} />
               <input type="text" className={styles.ChatInput} ref={inputRef} value={input} onChange={(e) => setInput(e.target.value)} />
               <button className={styles.SendButton} onClick={handleSendMessage}>
                 <img src="/send.png" alt="Send" className={styles.sendIcon} />
