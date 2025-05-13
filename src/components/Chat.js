@@ -10,7 +10,6 @@ function Chat() {
   const [messages, setMessages] = useState([]);
   const [input, setInput] = useState("");
   const [step, setStep] = useState("initial");
-  const [accidentType, setAccidentType] = useState(null);
   const [roadType, setRoadType] = useState(null);
   const [selectedOption, setSelectedOption] = useState("");
   const [inputOptions, setInputOptions] = useState([]);
@@ -67,7 +66,6 @@ function Chat() {
         const res = await axios.post(
           "http://172.16.41.240:8080/ai-result/init",
           {
-            accident_type: accidentType,
             road_type: currentRoadType,
           },
           {
