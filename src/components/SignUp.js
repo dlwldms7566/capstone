@@ -7,6 +7,7 @@ function SignUp() {
         name: "",
         email: "",
         password: "",
+        passwordCheck: "",
         isAllAgreed: false,
         isAgreed: false,
         privacy: false,
@@ -53,6 +54,12 @@ function SignUp() {
     const handleSubmit = async (e) => {
         e.preventDefault();
         setIsLoading(true);
+
+        if (formData.password !== formData.passwordCheck) {
+            alert("비밀번호가 일치하지 않습니다.");
+            setIsLoading(false);
+            return;
+        }        
     
         try {
             const requestData = {
@@ -109,18 +116,6 @@ function SignUp() {
                         />
                     </div>
 
-                    {/* <div>
-                        <input
-                            type="id"
-                            name="id"
-                            value={formData.email}
-                            onChange={handleChange}
-                            required
-                            className={styles.input}
-                            placeholder="아이디"
-                        />
-                    </div> */}
-
                     <div className={styles.inputGroup}>
                         <input
                             type="email"
@@ -149,9 +144,9 @@ function SignUp() {
                     </div>
                     <div className={styles.inputGroupSmall}>
                         <input
-                            type="password check"
-                            name="password check"
-                            value={formData.password}
+                            type="password"
+                            name="passwordCheck"
+                            value={formData.passwordCheck}
                             onChange={handleChange}
                             required
                             className={styles.input}

@@ -113,9 +113,10 @@ function Chat() {
       if (!response.ok) throw new Error("업로드 실패");
       const result = await response.json();
 
-      const { analysis, similar_case, explanation, question, ai_result } = result;
+      const { labels_detected } = result.ai_result;
+      const { analysis, similar_case, explanation, question, needs_confirmation } = labels_detected;
 
-      if (result.needs_confirmation) {
+      if (needs_confirmation) {
         setStep("awaitingUserAnswer");
         setMessages(prev => [
           ...prev,
@@ -127,7 +128,7 @@ function Chat() {
       }
 
       const fileURL = URL.createObjectURL(file);
-
+      
       setMessages(prev => [
         ...prev,
         { role: 'user', content: fileURL, isVideo: true },
@@ -224,12 +225,14 @@ function Chat() {
       );
 
       const result = res.data;
+      const { labels_detected } = result;
+      const { analysis, similar_case, explanation, question } = labels_detected;
 
-      const analysisItems = Object.entries(result.analysis || {}).map(([key, value], i) => (
+      const analysisItems = Object.entries(analysis || {}).map(([key, value], i) => (
         <p key={i}><strong>{key}:</strong> {String(value)}</p>
       ));
 
-      const similar = result.similar_case ? (
+      const similar = similar_case ? (
         <div>
           <p><strong>유사 판례:</strong></p>
           <p>유사도: {result.similar_case.score}</p>
@@ -238,11 +241,11 @@ function Chat() {
         </div>
       ) : null;
 
-      const explanationBlock = result.explanation ? (
+      const explanationBlock = explanation ? (
         <p><strong>설명:</strong> {result.explanation}</p>
       ) : null;
 
-      const questionBlock = result.question ? (
+      const questionBlock = question ? (
         <p style={{ color: "red" }}><strong>추가 질문:</strong> {result.question}</p>
       ) : null;
 

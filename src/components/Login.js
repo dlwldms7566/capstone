@@ -89,19 +89,11 @@ function Login() {
                     로그인
                 </button>
             </form>
-            {/* <p className={styles.loginText}>
-                계정이 없으신가요? {" "}
-                <span className={styles.loginLink} onClick={() => navigate("/SignUp")}>
-                    회원 가입
-                </span>
-            </p> */}
+           
             <div className={styles.bottom}>
-                <a className={styles.loginLink} href="https://openai.com/policies/terms-of-use/">
-                    <span>비밀번호 찾기 </span>
-                </a>
-                |
+                <span>계정이 없으신가요?</span>
                 <Link className={styles.loginLink} to="/signup">
-                    <span> 회원가입</span>
+                <span>회원가입</span>
                 </Link>
             </div>
         </div>

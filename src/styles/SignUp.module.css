@@ -72,7 +72,7 @@
 .loginLink {
     cursor: pointer;
     color: rgb(180, 180, 180);
-    font-size: 15px;
+    font-size: 14px;
     font-weight: 300;
     text-decoration: none;
 }
@@ -82,9 +82,20 @@
     text-align: center;
     border-top: 0.8px solid rgb(180, 180, 180);
     font-weight: 300;
-    padding-top: 30px;
+    padding-top: 20px;
     color: #9E9E9E;
 }
+  
+  .bottom span {
+    margin-right: 8px;
+  }
+  
+  .loginLink span {
+    text-decoration: underline; 
+    color: rgb(180, 180, 180);;
+    cursor: pointer;
+  }
+  
 
 .policy {
     text-decoration: none;
