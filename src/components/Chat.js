@@ -89,9 +89,19 @@ function Chat() {
     const file = e.target.files[0];
     if (!file || !roadType) return;
 
+    const fileURL = URL.createObjectURL(file);
+
+    setMessages(prev => [
+      ...prev,
+      { role: 'user', content: fileURL, isVideo: true },
+      { role: 'AI', content: '영상 분석중...', id: 'loading' }
+    ]);
+
     const formData = new FormData();
     formData.append("video", file);
     formData.append("road_type", roadType);
+    formData.append("userID", localStorage.getItem("userID"));
+    formData.append("ai_result_id", aiResultId);
 
     const token = localStorage.getItem("token");
     if (!token) {
@@ -117,38 +127,14 @@ function Chat() {
       if (needs_confirmation) {
         setStep("awaitingUserAnswer");
         setMessages(prev => [
-          ...prev,
+          ...prev.filter(msg => msg.id !== 'loading'),
           {
             role: "AI",
-            content: `분석 결과에 불확실한 항목이 있습니다. 다음 질문에 답해주세요: ${result.question}`
+            content: `분석 결과에 불확실한 항목이 있습니다. 다음 질문에 답해주세요: ${question}`
           }
         ]);
+        return;
       }
-
-      const fileURL = URL.createObjectURL(file);
-      
-      setMessages(prev => [
-        ...prev,
-        { role: 'user', content: fileURL, isVideo: true },
-        { role: 'AI', content: '영상 분석중...', id: 'loading' }
-      ]);
-      
-      setMessages(prev => [
-        ...prev.filter(msg => msg.id !== 'loading'), 
-        { role: 'AI', content: '분석이 완료되었습니다. 결과를 확인해주세요.' },
-        {
-          role: 'AI',
-          content: (
-            <div style={{ maxWidth: '240px', marginTop: '10px', textAlign: 'left' }}>
-              <p style={{ fontWeight: 'bold' }}>분석 결과</p>
-              {analysisItems}
-              {similar}
-              {explanationBlock}
-              {questionBlock}
-            </div>
-          )
-        }
-      ]);
 
       const analysisItems = Object.entries(analysis || {}).map(([key, value], i) => (
         <p key={i}><strong>{key}:</strong> {String(value)}</p>
@@ -172,8 +158,7 @@ function Chat() {
       ) : null;
 
       setMessages(prev => [
-        ...prev,
-        { role: 'user', content: fileURL, isVideo: true },
+        ...prev.filter(msg => msg.id !== 'loading'),
         { role: 'AI', content: '분석이 완료되었습니다. 결과를 확인해주세요.' },
         {
           role: 'AI',
@@ -192,11 +177,12 @@ function Chat() {
     } catch (error) {
       console.error("파일 업로드 또는 분석 실패:", error);
       setMessages(prev => [
-        ...prev,
+        ...prev.filter(msg => msg.id !== 'loading'),
         { role: 'AI', content: '파일 업로드 중 문제가 발생했습니다. 다시 시도해주세요.' }
       ]);
     }
   };
+
 
   const handleUserAnswerSubmit = async (userAnswer) => {
     const token = localStorage.getItem("token");
