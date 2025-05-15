@@ -285,7 +285,9 @@ body {
   max-width: fit-content;
   word-wrap: break-word;
   width: auto;
-  line-height: 0.5;
+  line-height: 1.5; 
+  white-space: pre-wrap;
+  word-break: break-word;
 }
 
 .userMessage {
@@ -294,6 +296,9 @@ body {
   text-align: right;
   margin-left: auto;
   padding: 15px;
+  line-height: 1.5; 
+  white-space: pre-wrap;
+  word-break: break-word;
 }
 
 .aiMessage {
@@ -301,6 +306,9 @@ body {
   text-align: left;
   margin-right: auto;
   padding: 15px;
+  line-height: 1.5; 
+  white-space: pre-wrap;
+  word-break: break-word;
 }
 
 .InputContainer {

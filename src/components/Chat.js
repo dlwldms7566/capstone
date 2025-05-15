@@ -182,13 +182,13 @@ function Chat() {
     }
   };
 
-
   const handleUserAnswerSubmit = async (userAnswer) => {
     const token = localStorage.getItem("token");
     const userID = localStorage.getItem("userID");
 
     if (!token || !userID || !aiResultId) {
-      console.error("필수 정보 누락 (token, userID, aiResultId)");
+      console.error("필수 정보 누락", { token, userID, aiResultId });
+      alert("분석 정보가 아직 준비되지 않았습니다. 잠시 후 다시 시도해주세요.");
       return;
     }
 
@@ -264,6 +264,22 @@ function Chat() {
     setInput("");
   };
 
+  const handleKeyDown = (e) => {
+    if (e.key === "Enter") {
+      if (step === "awaitingRoadType") {
+        handleOptionSubmit();
+      } else if (step === "awaitingUserAnswer") {
+        if (!input.trim()) return;
+        const answer = input.trim();
+        setInput("");
+        handleUserAnswerSubmit(answer);
+        setStep("finished");
+      } else {
+        handleSendMessage();
+      }
+    }
+  };
+
   return (
     <div>
       <a href="/">
@@ -293,7 +309,7 @@ function Chat() {
 
       <div className={styles.ChatInputContainer}>
         <div className={styles.InputContainer}>
-          {step === "awaitingUserAnswer" && (
+          {step === "awaitingUserAnswer" ? (
             <div className={styles.SelectInputWrapper}>
               <input
                 type="text"
@@ -301,26 +317,18 @@ function Chat() {
                 placeholder="추가 설명을 입력하세요..."
                 value={input}
                 onChange={(e) => setInput(e.target.value)}
+                onKeyDown={handleKeyDown}
               />
-              <button
-                className={styles.SendButton}
-                onClick={() => {
-                  handleUserAnswerSubmit(input);
-                  setInput("");
-                  setStep("finished");
-                }}
-              >
+              <button className={styles.SendButton} onClick={() => handleKeyDown({ key: "Enter", preventDefault: () => {} })}>
                 <img src="/send.png" alt="Send" className={styles.sendIcon} />
               </button>
             </div>
-          )}
-
-          {inputOptions.length > 0 ? (
+          ) : inputOptions.length > 0 ? (
             <div className={styles.SelectInputWrapper}>
               <div className={styles.OptionList}>
                 {inputOptions.map((opt, i) => (
                   <label key={i} className={styles.radioOption}>
-                    <input type="radio" name="selectOption" value={opt} checked={selectedOption === opt} onChange={() => setSelectedOption(opt)} />
+                    <input type="radio" name="selectOption" value={opt} checked={selectedOption === opt} onChange={() => setSelectedOption(opt)} onKeyDown={handleKeyDown}/>
                     {opt}
                   </label>
                 ))}
@@ -335,25 +343,13 @@ function Chat() {
                 <img src="/attach.png" alt="Attach" className={styles.attachIcon} />
               </label>
               <input id="fileUpload" type="file" style={{ display: "none" }} onChange={handleFileUpload} />
-              <input type="text" className={styles.ChatInput} ref={inputRef} value={input} onChange={(e) => setInput(e.target.value)} />
+              <input type="text" className={styles.ChatInput} ref={inputRef} value={input} onChange={(e) => setInput(e.target.value)} onKeyDown={handleKeyDown} />
               <button className={styles.SendButton} onClick={handleSendMessage}>
                 <img src="/send.png" alt="Send" className={styles.sendIcon} />
               </button>
             </>
           )}
         </div>
-
-        {/* <div className={styles.Divider}></div>
-
-        <div className={styles.ButtonContainer}>
-          <label htmlFor="fileUpload" className={styles.AttachButton}>
-            <img src="/attach.png" alt="Attach" className={styles.attachIcon} />
-          </label>
-          <input id="fileUpload" type="file" style={{ display: "none" }} onChange={handleFileUpload} />
-          <button className={styles.search}><HiOutlineDocumentSearch /> 유사 판례 보기</button>
-          <button className={styles.reason}><MdOutlineSupportAgent /> 대처 방법 보기</button>
-          <button className={styles.reason}><FaBalanceScale /> 관련 법률 보기</button>
-        </div> */}
       </div>
 
       <p className={styles.refer}>과시리의 판단에 오류가 있을 수 있으며 법적 효력이 없습니다.</p>
