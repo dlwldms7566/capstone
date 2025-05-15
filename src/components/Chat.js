@@ -157,6 +157,10 @@ function Chat() {
         <p><strong>설명:</strong> {explanation}</p>
       ) : null;
 
+      const relatedLawBlock = similar_case?.related ? (
+        <p style={{ whiteSpace: "pre-wrap" }}><strong>관련 법령 및 판례:</strong> {similar_case.related}</p>
+      ) : null;
+
       const questionBlock = question ? (
         <p style={{ color: "red" }}><strong>추가 질문:</strong> {question}</p>
       ) : null;
@@ -172,6 +176,7 @@ function Chat() {
               {analysisItems}
               {similar}
               {explanationBlock}
+              {relatedLawBlock}
               {questionBlock}
             </div>
           )
@@ -236,8 +241,12 @@ function Chat() {
         <p><strong>설명:</strong> {result.explanation}</p>
       ) : null;
 
+      const relatedLawBlock = similar_case?.related ? (
+        <p style={{ whiteSpace: "pre-wrap" }}><strong>관련 법령 및 판례:</strong> {similar_case.related}</p>
+      ) : null;
+
       const questionBlock = question ? (
-        <p style={{ color: "red" }}><strong>추가 질문:</strong> {result.question}</p>
+        <p style={{ color: "red" }}><strong>추가 질문:</strong> {question}</p>
       ) : null;
 
       setMessages(prev => [
@@ -251,6 +260,7 @@ function Chat() {
               {analysisItems}
               {similar}
               {explanationBlock}
+              {relatedLawBlock}
               {questionBlock}
             </div>
           )
