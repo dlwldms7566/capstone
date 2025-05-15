@@ -28,6 +28,8 @@ function Chat() {
       ]);
       setInputOptions(["교차로", "고속도로", "일반도로"]);
       setStep("awaitingRoadType");
+      const storedId = localStorage.getItem("aiResultId");
+      if (storedId) setAiResultId(storedId);
     }
   }, []);
 
@@ -102,9 +104,12 @@ function Chat() {
     formData.append("userID", localStorage.getItem("userID"));
     formData.append("ai_result_id", aiResultId);
 
+    // setAiResultId(res.data.id);
+    // localStorage.setItem("aiResultId", res.data.id); // 저장
+
     const token = localStorage.getItem("token");
     if (!token) {
-      console.error("토큰 없음: 로그인 필요");
+      console.error("토큰 없음: 로그인 필요");ㅁ
       return;
     }
 
@@ -185,6 +190,8 @@ function Chat() {
   const handleUserAnswerSubmit = async (userAnswer) => {
     const token = localStorage.getItem("token");
     const userID = localStorage.getItem("userID");
+    const storedAiResultId = aiResultId || localStorage.getItem("aiResultId");
+
 
     if (!token || !userID || !aiResultId) {
       console.error("필수 정보 누락", { token, userID, aiResultId });
@@ -194,10 +201,11 @@ function Chat() {
 
     try {
       const res = await axios.post(
-        "http://172.16.41.240:8080/analyze/update-analysis",
+        // "http://172.16.41.240:8080/analyze/update-analysis",
+        "http://172.16.41.240:8080/ai-result/re-evaluation",
         {
           userID: parseInt(userID),
-          ai_result_id: aiResultId,
+          ai_result_id: storedAiResultId,
           user_answer: userAnswer,
         },
         {
@@ -218,11 +226,11 @@ function Chat() {
       const similar = similar_case ? (
         <div>
           <p><strong>유사 판례:</strong></p>
-          <p>유사도: {result.similar_case.score}</p>
-          <p>상황: {result.similar_case.situation}</p>
-          <p>최종 과실 비율: {result.similar_case.final_ratio}</p>
+          <p>유사도: {similar_case?.score}</p>
+          <p>상황: {similar_case?.situation}</p>
+          <p>최종 과실 비율: {similar_case?.final_ratio}</p>
         </div>
-      ) : null;
+      ) : null;      
 
       const explanationBlock = explanation ? (
         <p><strong>설명:</strong> {result.explanation}</p>
