@@ -238,7 +238,7 @@ function Chat() {
       ) : null;      
 
       const explanationBlock = explanation ? (
-        <p><strong>설명:</strong> {result.explanation}</p>
+        <p><strong>설명:</strong> {explanation}</p>
       ) : null;
 
       const relatedLawBlock = similar_case?.related ? (
