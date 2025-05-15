@@ -171,7 +171,7 @@ function Chat() {
         {
           role: 'AI',
           content: (
-            <div style={{ maxWidth: '240px', marginTop: '10px', textAlign: 'left' }}>
+            <div style={{ maxWidth: '800px', marginTop: '10px', textAlign: 'left' }}>
               <p style={{ fontWeight: 'bold' }}>분석 결과</p>
               {analysisItems}
               {similar}
@@ -255,7 +255,7 @@ function Chat() {
         {
           role: "AI",
           content: (
-            <div style={{ maxWidth: "240px", marginTop: "10px", textAlign: "left" }}>
+            <div style={{ maxWidth: "800px", marginTop: "10px", textAlign: "left" }}>
               <p style={{ fontWeight: "bold" }}>갱신된 분석 결과</p>
               {analysisItems}
               {similar}
