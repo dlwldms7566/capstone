@@ -83,20 +83,20 @@
   border-top: 0.8px solid rgb(180, 180, 180);
   font-weight: 300;
   padding-top: 20px;
-  color: #9E9E9E;
 }
 
 .bottom span {
   margin-right: 8px;
+  color: rgb(180, 180, 180);
+  font-weight: 400;
 }
 
 .loginLink span {
   text-decoration: underline;
   color: rgb(180, 180, 180);
-  ;
+  font-weight: 400;
   cursor: pointer;
 }
-
 
 .policy {
   text-decoration: none;
@@ -112,13 +112,9 @@
   width: 16px;
   height: 16px;
   border: 1px solid rgb(180, 180, 180);
-  /* 회색 테두리 */
   border-radius: 4px;
-  /* 모서리 둥글게 (선택) */
   appearance: none;
-  /* 브라우저 기본 체크박스 스타일 제거 */
   -webkit-appearance: none;
-  /* 사파리용 */
   background-color: transparent;
   cursor: pointer;
   vertical-align: middle;
@@ -126,7 +122,6 @@
 
 .checkboxContainer input[type="checkbox"]:checked {
   background-color: rgb(180, 180, 180);
-  /* 체크됐을 때 배경색도 회색 */
 }
 
 .inputGroup {
