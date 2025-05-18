@@ -306,7 +306,7 @@
   color: white;
   text-align: right;
   margin-left: auto;
-  padding: 13px;
+  padding: 10px 13px;
   line-height: 1.5; 
   white-space: pre-wrap;
   word-break: break-word;
@@ -316,7 +316,7 @@
   background-color: white;
   text-align: left;
   margin-right: auto;
-  padding: 13px;
+  padding: 10px 13px;
   line-height: 1.5; 
   white-space: pre-wrap;
   word-break: break-word;
