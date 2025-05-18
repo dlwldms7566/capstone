@@ -39,10 +39,15 @@ function Chat() {
 
   useEffect(() => {
     if (chatContainerRef.current) {
-      chatContainerRef.current.scrollTop = chatContainerRef.current.scrollHeight;
+      setTimeout(() => {
+        chatContainerRef.current.scrollTo({
+          top: chatContainerRef.current.scrollHeight,
+          behavior: "smooth",
+        });
+      }, 0);
     }
-  }, [messages]);
-
+  }, [messages]);  
+  
   const handleOptionSubmit = async () => {
     if (!selectedOption) return;
 
@@ -104,12 +109,9 @@ function Chat() {
     formData.append("userID", localStorage.getItem("userID"));
     formData.append("ai_result_id", aiResultId);
 
-    // setAiResultId(res.data.id);
-    // localStorage.setItem("aiResultId", res.data.id); // 저장
-
     const token = localStorage.getItem("token");
     if (!token) {
-      console.error("토큰 없음: 로그인 필요");ㅁ
+      console.error("토큰 없음: 로그인 필요"); ㅁ
       return;
     }
 
@@ -206,7 +208,6 @@ function Chat() {
 
     try {
       const res = await axios.post(
-        // "http://172.16.41.240:8080/analyze/update-analysis",
         "http://172.16.41.240:8080/ai-result/re-evaluation",
         {
           userID: parseInt(userID),
@@ -235,7 +236,7 @@ function Chat() {
           <p>상황: {similar_case?.situation}</p>
           <p>최종 과실 비율: {similar_case?.final_ratio}</p>
         </div>
-      ) : null;      
+      ) : null;
 
       const explanationBlock = explanation ? (
         <p><strong>설명:</strong> {explanation}</p>
@@ -325,48 +326,50 @@ function Chat() {
         ))}
       </div>
 
-      <div className={styles.ChatInputContainer}>
-        <div className={styles.InputContainer}>
-          {step === "awaitingUserAnswer" ? (
-            <div className={styles.SelectInputWrapper}>
-              <input
-                type="text"
-                className={styles.ChatInput}
-                placeholder="추가 설명을 입력하세요..."
-                value={input}
-                onChange={(e) => setInput(e.target.value)}
-                onKeyDown={handleKeyDown}
-              />
-              <button className={styles.SendButton} onClick={() => handleKeyDown({ key: "Enter", preventDefault: () => {} })}>
-                <img src="/send.png" alt="Send" className={styles.sendIcon} />
-              </button>
-            </div>
-          ) : inputOptions.length > 0 ? (
-            <div className={styles.SelectInputWrapper}>
-              <div className={styles.OptionList}>
-                {inputOptions.map((opt, i) => (
-                  <label key={i} className={styles.radioOption}>
-                    <input type="radio" name="selectOption" value={opt} checked={selectedOption === opt} onChange={() => setSelectedOption(opt)} onKeyDown={handleKeyDown}/>
-                    {opt}
-                  </label>
-                ))}
+      <div className={styles.ChatInputOverlay}>
+        <div className={styles.ChatInputContainer}>
+          <div className={styles.InputContainer}>
+            {step === "awaitingUserAnswer" ? (
+              <div className={styles.SelectInputWrapper}>
+                <input
+                  type="text"
+                  className={styles.ChatInput}
+                  placeholder="추가 설명을 입력하세요..."
+                  value={input}
+                  onChange={(e) => setInput(e.target.value)}
+                  onKeyDown={handleKeyDown}
+                />
+                <button className={styles.SendButton} onClick={() => handleKeyDown({ key: "Enter", preventDefault: () => { } })}>
+                  <img src="/send.png" alt="Send" className={styles.sendIcon} />
+                </button>
               </div>
-              <button className={styles.SendButton} onClick={handleOptionSubmit}>
-                <img src="/send.png" alt="Send" className={styles.sendIcon} />
-              </button>
-            </div>
-          ) : (
-            <>
-              <label htmlFor="fileUpload" className={styles.AttachButton}>
-                <img src="/attach.png" alt="Attach" className={styles.attachIcon} />
-              </label>
-              <input id="fileUpload" type="file" style={{ display: "none" }} onChange={handleFileUpload} />
-              <input type="text" className={styles.ChatInput} ref={inputRef} value={input} onChange={(e) => setInput(e.target.value)} onKeyDown={handleKeyDown} />
-              <button className={styles.SendButton} onClick={handleSendMessage}>
-                <img src="/send.png" alt="Send" className={styles.sendIcon} />
-              </button>
-            </>
-          )}
+            ) : inputOptions.length > 0 ? (
+              <div className={styles.SelectInputWrapper}>
+                <div className={styles.OptionList}>
+                  {inputOptions.map((opt, i) => (
+                    <label key={i} className={styles.radioOption}>
+                      <input type="radio" name="selectOption" value={opt} checked={selectedOption === opt} onChange={() => setSelectedOption(opt)} onKeyDown={handleKeyDown} />
+                      {opt}
+                    </label>
+                  ))}
+                </div>
+                <button className={styles.SendButton} onClick={handleOptionSubmit}>
+                  <img src="/send.png" alt="Send" className={styles.sendIcon} />
+                </button>
+              </div>
+            ) : (
+              <>
+                <label htmlFor="fileUpload" className={styles.AttachButton}>
+                  <img src="/attach.png" alt="Attach" className={styles.attachIcon} />
+                </label>
+                <input id="fileUpload" type="file" style={{ display: "none" }} onChange={handleFileUpload} />
+                <input type="text" className={styles.ChatInput} ref={inputRef} value={input} onChange={(e) => setInput(e.target.value)} onKeyDown={handleKeyDown} />
+                <button className={styles.SendButton} onClick={handleSendMessage}>
+                  <img src="/send.png" alt="Send" className={styles.sendIcon} />
+                </button>
+              </>
+            )}
+          </div>
         </div>
       </div>
 
