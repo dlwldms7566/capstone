@@ -394,11 +394,11 @@
 }
 
 .aiWrapper {
-  justify-content: flex-start; /* AI는 왼쪽 정렬 */
+  justify-content: flex-start;
 }
 
 .userWrapper {
-  justify-content: flex-end; /* 유저는 오른쪽 정렬 */
+  justify-content: flex-end;
 }
 
 .avatar {

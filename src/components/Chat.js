@@ -111,7 +111,7 @@ function Chat() {
 
     const token = localStorage.getItem("token");
     if (!token) {
-      console.error("토큰 없음: 로그인 필요"); ㅁ
+      console.error("토큰 없음: 로그인 필요");
       return;
     }
 
@@ -126,11 +126,11 @@ function Chat() {
 
       if (!response.ok) throw new Error("업로드 실패");
       const result = await response.json();
+      const { ai_result } = result;
+      const { labels_detected, fault_ratio, accident_type, road_type, is_evaluation_completed } = ai_result;
+      const { analysis, similar_case, explanation, question, needs_confirmation, uncertain_items } = labels_detected;
 
-      const { labels_detected } = result.ai_result;
-      const { analysis, similar_case, explanation, question, needs_confirmation } = labels_detected;
-
-      if (needs_confirmation) {
+      if (needs_confirmation || question) {
         setStep("awaitingUserAnswer");
         setMessages(prev => [
           ...prev.filter(msg => msg.id !== 'loading'),
@@ -173,13 +173,49 @@ function Chat() {
         {
           role: 'AI',
           content: (
-            <div style={{ maxWidth: '800px', marginTop: '10px', textAlign: 'left' }}>
-              <p style={{ fontWeight: 'bold' }}>분석 결과</p>
-              {analysisItems}
-              {similar}
-              {explanationBlock}
-              {relatedLawBlock}
-              {questionBlock}
+            <div style={{ maxWidth: '800px', marginTop: '10px', textAlign: 'left', lineHeight: '1.5' }}>
+              <p style={{ fontWeight: 'bold' }}>과실 비율</p>
+              <svg width="180" height="180" viewBox="0 0 36 36">
+                <circle className={styles.graph_bg} cx="18" cy="18" r="14" fill="none" strokeWidth="4.5" />
+                <circle
+                  className={styles.graph_fg}
+                  cx="18"
+                  cy="18"
+                  r="14"
+                  fill="none"
+                  strokeWidth="4.5"
+                  strokeDasharray={`${aiResult.fault_ratio.A} ${100 - aiResult.fault_ratio.A}`}
+                  strokeDashoffset="25"
+                  transform="rotate(-90 18 18)"
+                />
+              </svg>
+              <div style={{ marginTop: '8px' }}>
+                A: {aiResult.fault_ratio.A}%<br />
+                B: {aiResult.fault_ratio.B}%
+              </div>
+              <div>
+                {road_type === "교차로" && (
+                  <p style={{ marginBottom: '8px' }}>
+                    <strong>교차로 사고는 다음의 6가지 요소를 기준으로 분석됩니다.</strong>
+                  </p>
+                )}
+                {road_type === "고속도로" && (
+                  <p>
+                    <strong>고속도로 사고는 다음의 4가지 요소를 기준으로 분석됩니다.</strong>
+                  </p>
+                )}
+                {road_type === "일반도로" && (
+                  <p>
+                    <strong>일반도로 사고는 다음의 5가지 요소를 기준으로 분석됩니다.</strong>
+                  </p>
+                )}
+                <p style={{ fontWeight: 'bold' }}>분석 결과</p>
+                {analysisItems}
+                {similar}
+                {explanationBlock}
+                {relatedLawBlock}
+                {questionBlock}
+              </div>
             </div>
           )
         }
@@ -226,9 +262,9 @@ function Chat() {
       const { analysis, similar_case, explanation, question } = labels_detected;
 
       const analysisItems = Object.entries(analysis || {}).map(([key, value], i) => (
-        <p key={i}><strong>{key}:</strong> {String(value)}</p>
+        <p key={i}><strong>{key}:</strong> {value === "판단 불가" ? "판단 불가" : String(value)}</p>
       ));
-
+      
       const similar = similar_case ? (
         <div>
           <p><strong>유사 판례:</strong></p>
@@ -256,13 +292,49 @@ function Chat() {
         {
           role: "AI",
           content: (
-            <div style={{ maxWidth: "800px", marginTop: "10px", textAlign: "left" }}>
-              <p style={{ fontWeight: "bold" }}>갱신된 분석 결과</p>
-              {analysisItems}
-              {similar}
-              {explanationBlock}
-              {relatedLawBlock}
-              {questionBlock}
+            <div style={{ maxWidth: "800px", marginTop: "10px", textAlign: "left", lineHeight: '1.5' }}>
+              <p style={{ fontWeight: 'bold' }}>과실 비율</p>
+              <svg width="180" height="180" viewBox="0 0 36 36">
+                <circle className={styles.graph_bg} cx="18" cy="18" r="14" fill="none" strokeWidth="4.5" />
+                <circle
+                  className={styles.graph_fg}
+                  cx="18"
+                  cy="18"
+                  r="14"
+                  fill="none"
+                  strokeWidth="4.5"
+                  strokeDasharray={`${aiResult.fault_ratio.A} ${100 - aiResult.fault_ratio.A}`}
+                  strokeDashoffset="25"
+                  transform="rotate(-90 18 18)"
+                />
+              </svg>
+              <div style={{ marginTop: '8px' }}>
+                A: {aiResult.fault_ratio.A}%<br />
+                B: {aiResult.fault_ratio.B}%
+              </div>
+              <div>
+                {road_type === "교차로" && (
+                  <p>
+                    <strong>교차로 사고는 다음의 6가지 요소를 기준으로 분석됩니다.</strong>
+                  </p>
+                )}
+                {road_type === "고속도로" && (
+                  <p>
+                    <strong>고속도로 사고는 다음의 4가지 요소를 기준으로 분석됩니다.</strong>
+                  </p>
+                )}
+                {road_type === "일반도로" && (
+                  <p>
+                    <strong>일반도로 사고는 다음의 5가지 요소를 기준으로 분석됩니다.</strong>
+                  </p>
+                )}
+                <p style={{ fontWeight: "bold" }}>갱신된 분석 결과</p>
+                {analysisItems}
+                {similar}
+                {explanationBlock}
+                {relatedLawBlock}
+                {questionBlock}
+              </div>
             </div>
           )
         }
@@ -314,7 +386,7 @@ function Chat() {
             {msg.role === "AI" && <img src="/ai.png" alt="AI" className={styles.avatar} />}
             <div className={`${styles.message} ${msg.role === "AI" ? styles.aiMessage : styles.userMessage}`}>
               {msg.isVideo ? (
-                <video controls width="250" src={msg.content} className={styles.videoPreview} poster="/video_thumbnail.png" />
+                <video controls width="400" src={msg.content} className={styles.videoPreview} poster="/video_thumbnail.png" />
               ) : typeof msg.content === "string" ? (
                 <span>{msg.content}</span>
               ) : (
