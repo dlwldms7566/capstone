@@ -159,8 +159,19 @@ function Chat() {
         <p><strong>설명:</strong> {explanation}</p>
       ) : null;
 
+      // const relatedLawBlock = similar_case?.related ? (
+      //   <p style={{ whiteSpace: "pre-wrap" }}><strong>관련 법령 및 판례:</strong> {similar_case.related}</p>
+      // ) : null;
+
       const relatedLawBlock = similar_case?.related ? (
-        <p style={{ whiteSpace: "pre-wrap" }}><strong>관련 법령 및 판례:</strong> {similar_case.related}</p>
+        <div style={{ whiteSpace: "pre-wrap" }}>
+          <p><strong>관련 법령 및 판례:</strong></p>
+          {similar_case.related
+            .split(/(?<=\.)\s+/)
+            .map((sentence, idx) => (
+              <p key={idx}>{sentence.trim()}</p>
+            ))}
+        </div>
       ) : null;
 
       const questionBlock = question ? (
@@ -278,8 +289,19 @@ function Chat() {
         <p><strong>설명:</strong> {explanation}</p>
       ) : null;
 
+      // const relatedLawBlock = similar_case?.related ? (
+      //   <p style={{ whiteSpace: "pre-wrap" }}><strong>관련 법령 및 판례:</strong> {similar_case.related}</p>
+      // ) : null;
+
       const relatedLawBlock = similar_case?.related ? (
-        <p style={{ whiteSpace: "pre-wrap" }}><strong>관련 법령 및 판례:</strong> {similar_case.related}</p>
+        <div style={{ whiteSpace: "pre-wrap" }}>
+          <p><strong>관련 법령 및 판례:</strong></p>
+          {similar_case.related
+            .split(/(?<=\.)\s+/)
+            .map((sentence, idx) => (
+              <p key={idx}>{sentence.trim()}</p>
+            ))}
+        </div>
       ) : null;
 
       const questionBlock = question ? (
