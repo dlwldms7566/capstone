@@ -14,6 +14,7 @@ function Chat() {
   const [selectedOption, setSelectedOption] = useState("");
   const [inputOptions, setInputOptions] = useState([]);
   const [aiResultId, setAiResultId] = useState(null);
+  const [followUpStep, setFollowUpStep] = useState("idle");
 
   const inputRef = useRef(null);
   const chatContainerRef = useRef(null);
@@ -371,11 +372,52 @@ function Chat() {
     }
   };
 
-  const handleSendMessage = () => {
+  const handleSendMessage = async () => {
     if (!input.trim()) return;
-    setMessages(prev => [...prev, { role: "user", content: input.trim() }]);
+  
+    const userMessage = input.trim();
+    setMessages(prev => [...prev, { role: "user", content: userMessage }]);
     setInput("");
-  };
+  
+    if (step === "finished" || followUpStep === "awaitingAnswer") {
+      const token = localStorage.getItem("token");
+      const userID = localStorage.getItem("userID");
+      const storedAiResultId = aiResultId || localStorage.getItem("aiResultId");
+  
+      if (!token || !userID || !storedAiResultId) {
+        console.error("후속 질문 실패: 필수 정보 없음");
+        setMessages(prev => [...prev, { role: "AI", content: "후속 질문을 처리할 수 없습니다. 로그인 상태를 확인해주세요." }]);
+        return;
+      }
+  
+      try {
+        const res = await axios.post(
+          "http://172.16.41.240:8080/query/chat",
+          {
+            userID: parseInt(userID),
+            ai_result_id: storedAiResultId,
+            message: userMessage
+          },
+          {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            }
+          }
+        );
+  
+        const { response } = res.data;
+  
+        setMessages(prev => [...prev, { role: "AI", content: response }]);
+        setFollowUpStep("idle");
+  
+      } catch (err) {
+        console.error("후속 질문 처리 실패:", err);
+        setMessages(prev => [...prev, { role: "AI", content: "후속 질문 처리 중 문제가 발생했습니다." }]);
+      }
+  
+      return;
+    }
+  };  
 
   const handleKeyDown = (e) => {
     if (e.key === "Enter") {
@@ -387,11 +429,12 @@ function Chat() {
         setInput("");
         handleUserAnswerSubmit(answer);
         setStep("finished");
+        setFollowUpStep("awaitingAnswer");
       } else {
         handleSendMessage();
       }
     }
-  };
+  };  
 
   return (
     <div>
