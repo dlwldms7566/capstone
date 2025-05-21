@@ -10,12 +10,12 @@ function Chat() {
   const [messages, setMessages] = useState([]);
   const [input, setInput] = useState("");
   const [step, setStep] = useState("initial");
-  const [roadType, setRoadType] = useState(null);
+  const [road_type, setRoadType] = useState(null);
   const [selectedOption, setSelectedOption] = useState("");
   const [inputOptions, setInputOptions] = useState([]);
   const [aiResultId, setAiResultId] = useState(null);
   const [followUpStep, setFollowUpStep] = useState("idle");
-
+   
   const inputRef = useRef(null);
   const chatContainerRef = useRef(null);
   const navigate = useNavigate();
@@ -83,6 +83,7 @@ function Chat() {
           }
         );
         setAiResultId(res.data.id);
+        localStorage.setItem("aiResultId", res.data.id);
       } catch (error) {
         console.error("AI 결과 초기화 실패:", error);
         setMessages(prev => [
@@ -95,7 +96,7 @@ function Chat() {
 
   const handleFileUpload = async (e) => {
     const file = e.target.files[0];
-    if (!file || !roadType) return;
+    if (!file || !road_type) return;
 
     const fileURL = URL.createObjectURL(file);
 
@@ -126,6 +127,8 @@ function Chat() {
       });
 
       if (!response.ok) throw new Error("업로드 실패");
+
+      // 판단 불가 있을 때
       const result = await response.json();
       const { ai_result } = result;
       const { labels_detected, fault_ratio, accident_type, road_type, is_evaluation_completed } = ai_result;
@@ -144,40 +147,34 @@ function Chat() {
       }
 
       const analysisItems = Object.entries(analysis || {}).map(([key, value], i) => (
-        <p key={i}><strong>{key}:</strong> {String(value)}</p>
-      ));
-
-      const similar = similar_case ? (
-        <div>
-          <p><strong>유사 판례:</strong></p>
-          <p>유사도: {similar_case.score}</p>
-          <p>상황: {similar_case.situation}</p>
-          <p>최종 과실 비율: {similar_case.final_ratio}</p>
-        </div>
-      ) : null;
+        <p key={i}>
+          {i + 1}. {key}: {value === "판단 불가" ? "판단 불가" : String(value)}
+        </p>
+      ));      
 
       const explanationBlock = explanation ? (
         <p><strong>설명:</strong> {explanation}</p>
       ) : null;
 
-      // const relatedLawBlock = similar_case?.related ? (
-      //   <p style={{ whiteSpace: "pre-wrap" }}><strong>관련 법령 및 판례:</strong> {similar_case.related}</p>
-      // ) : null;
-
-      const relatedLawBlock = similar_case?.related ? (
-        <div style={{ whiteSpace: "pre-wrap" }}>
-          <p><strong>관련 법령 및 판례:</strong></p>
-          {similar_case.related
-            .split(/(?<=\.)\s+/)
-            .map((sentence, idx) => (
-              <p key={idx}>{sentence.trim()}</p>
-            ))}
-        </div>
-      ) : null;
-
       const questionBlock = question ? (
         <p style={{ color: "red" }}><strong>추가 질문:</strong> {question}</p>
       ) : null;
+
+      let faultA = 0;
+      let faultB = 0;
+
+      const finalRatioStr = ai_result.labels_detected?.similar_case?.final_ratio;
+
+      if (finalRatioStr) {
+        const match = finalRatioStr.match(/A:\s*(\d+)[^0-9]+B:\s*(\d+)/);
+        if (match) {
+          faultA = Number(match[1]);
+          faultB = Number(match[2]);
+          console.log(faultA, faultB)
+        } else {
+          console.warn("final_ratio 파싱 실패:", finalRatioStr);
+        }
+      }    
 
       setMessages(prev => [
         ...prev.filter(msg => msg.id !== 'loading'),
@@ -196,14 +193,14 @@ function Chat() {
                   r="14"
                   fill="none"
                   strokeWidth="4.5"
-                  strokeDasharray={`${aiResult.fault_ratio.A} ${100 - aiResult.fault_ratio.A}`}
+                  strokeDasharray={`${faultA} ${100 - faultA}`}
                   strokeDashoffset="25"
                   transform="rotate(-90 18 18)"
                 />
               </svg>
               <div style={{ marginTop: '8px' }}>
-                A: {aiResult.fault_ratio.A}%<br />
-                B: {aiResult.fault_ratio.B}%
+                A: {faultA}%<br />
+                B: {faultB}%
               </div>
               <div>
                 {road_type === "교차로" && (
@@ -221,17 +218,27 @@ function Chat() {
                     <strong>일반도로 사고는 다음의 5가지 요소를 기준으로 분석됩니다.</strong>
                   </p>
                 )}
-                <p style={{ fontWeight: 'bold' }}>분석 결과</p>
+                {/* <p style={{ fontWeight: 'bold' }}>분석 결과</p> */}
                 {analysisItems}
-                {similar}
                 {explanationBlock}
-                {relatedLawBlock}
                 {questionBlock}
               </div>
             </div>
           )
         }
       ]);
+
+      if (is_evaluation_completed) {
+        setStep("finished");
+        setFollowUpStep("awaitingAnswer");
+        setMessages(prev => [
+          ...prev,
+          {
+            role: "AI",
+            content: "추가로 궁금한 점이 있으면 자유롭게 질문해주세요. 관련 정보를 제공해 드릴게요.",
+          }
+        ]);
+      }
 
     } catch (error) {
       console.error("파일 업로드 또는 분석 실패:", error);
@@ -243,10 +250,15 @@ function Chat() {
   };
 
   const handleUserAnswerSubmit = async (userAnswer) => {
+
+    setMessages(prev => [
+      ...prev,
+      { role: "user", content: userAnswer }
+    ]);
+
     const token = localStorage.getItem("token");
     const userID = localStorage.getItem("userID");
     const storedAiResultId = aiResultId || localStorage.getItem("aiResultId");
-
 
     if (!token || !userID || !aiResultId) {
       console.error("필수 정보 누락", { token, userID, aiResultId });
@@ -269,49 +281,44 @@ function Chat() {
         }
       );
 
+      // 판단 불가 없을 때
       const result = res.data;
-      const { labels_detected } = result;
+      const ai_result = result.ai_result;
+      const { labels_detected, is_evaluation_completed } = ai_result;
       const { analysis, similar_case, explanation, question } = labels_detected;
 
       const analysisItems = Object.entries(analysis || {}).map(([key, value], i) => (
-        <p key={i}><strong>{key}:</strong> {value === "판단 불가" ? "판단 불가" : String(value)}</p>
+        <p key={i}>
+          {i + 1}. {key}: {value === "판단 불가" ? "판단 불가" : String(value)}
+        </p>
       ));
-      
-      const similar = similar_case ? (
-        <div>
-          <p><strong>유사 판례:</strong></p>
-          <p>유사도: {similar_case?.score}</p>
-          <p>상황: {similar_case?.situation}</p>
-          <p>최종 과실 비율: {similar_case?.final_ratio}</p>
-        </div>
-      ) : null;
 
       const explanationBlock = explanation ? (
         <p><strong>설명:</strong> {explanation}</p>
-      ) : null;
-
-      // const relatedLawBlock = similar_case?.related ? (
-      //   <p style={{ whiteSpace: "pre-wrap" }}><strong>관련 법령 및 판례:</strong> {similar_case.related}</p>
-      // ) : null;
-
-      const relatedLawBlock = similar_case?.related ? (
-        <div style={{ whiteSpace: "pre-wrap" }}>
-          <p><strong>관련 법령 및 판례:</strong></p>
-          {similar_case.related
-            .split(/(?<=\.)\s+/)
-            .map((sentence, idx) => (
-              <p key={idx}>{sentence.trim()}</p>
-            ))}
-        </div>
       ) : null;
 
       const questionBlock = question ? (
         <p style={{ color: "red" }}><strong>추가 질문:</strong> {question}</p>
       ) : null;
 
+      let faultA = 0;
+      let faultB = 0;
+
+      const finalRatioStr = ai_result.labels_detected?.similar_case?.final_ratio;
+
+      if (finalRatioStr) {
+        const match = finalRatioStr.match(/A:\s*(\d+)[^0-9]+B:\s*(\d+)/);
+        if (match) {
+          faultA = Number(match[1]);
+          faultB = Number(match[2]);
+        } else {
+          console.warn("final_ratio 파싱 실패:", finalRatioStr);
+        }
+      }      
+
       setMessages(prev => [
         ...prev,
-        { role: "user", content: userAnswer },
+        // { role: "user", content: userAnswer },
         {
           role: "AI",
           content: (
@@ -326,14 +333,14 @@ function Chat() {
                   r="14"
                   fill="none"
                   strokeWidth="4.5"
-                  strokeDasharray={`${aiResult.fault_ratio.A} ${100 - aiResult.fault_ratio.A}`}
+                  strokeDasharray={`${faultA} ${100 - faultA}`}
                   strokeDashoffset="25"
                   transform="rotate(-90 18 18)"
                 />
               </svg>
               <div style={{ marginTop: '8px' }}>
-                A: {aiResult.fault_ratio.A}%<br />
-                B: {aiResult.fault_ratio.B}%
+                A: {faultA}%<br />
+                B: {faultB}%
               </div>
               <div>
                 {road_type === "교차로" && (
@@ -351,11 +358,9 @@ function Chat() {
                     <strong>일반도로 사고는 다음의 5가지 요소를 기준으로 분석됩니다.</strong>
                   </p>
                 )}
-                <p style={{ fontWeight: "bold" }}>갱신된 분석 결과</p>
+                {/* <p style={{ fontWeight: "bold" }}>갱신된 분석 결과</p> */}
                 {analysisItems}
-                {similar}
                 {explanationBlock}
-                {relatedLawBlock}
                 {questionBlock}
               </div>
             </div>
@@ -363,12 +368,21 @@ function Chat() {
         }
       ]);
 
+      if (is_evaluation_completed) {
+        setStep("finished");
+        setFollowUpStep("awaitingAnswer");
+        setMessages(prev => [
+          ...prev,
+          {
+            role: "AI",
+            content: "추가로 궁금한 점이 있으면 자유롭게 질문해주세요. 관련 정보를 제공해 드릴게요.",
+          }
+        ]);
+      }
+
     } catch (err) {
       console.error("분석 갱신 실패:", err);
-      setMessages(prev => [
-        ...prev,
-        { role: "AI", content: "추가 분석 중 오류가 발생했습니다. 다시 시도해주세요." }
-      ]);
+    
     }
   };
 
@@ -448,7 +462,7 @@ function Chat() {
       <div className={styles.ChatContainer} ref={chatContainerRef}>
         {messages.map((msg, i) => (
           <div key={i} className={`${styles.messageWrapper} ${msg.role === "AI" ? styles.aiWrapper : styles.userWrapper}`}>
-            {msg.role === "AI" && <img src="/ai.png" alt="AI" className={styles.avatar} />}
+            {msg.role === "AI" && <img src="/ai.png" alt="AI" className={styles.ai_avatar} />}
             <div className={`${styles.message} ${msg.role === "AI" ? styles.aiMessage : styles.userMessage}`}>
               {msg.isVideo ? (
                 <video controls width="400" src={msg.content} className={styles.videoPreview} poster="/video_thumbnail.png" />
@@ -458,7 +472,7 @@ function Chat() {
                 msg.content
               )}
             </div>
-            {msg.role === "user" && <img src="/user.png" alt="User" className={styles.avatar} />}
+            {msg.role === "user" && <img src="/user.png" alt="User" className={styles.user_avatar} />}
           </div>
         ))}
       </div>

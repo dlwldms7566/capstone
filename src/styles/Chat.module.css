@@ -255,17 +255,19 @@
   position: fixed;
   bottom: 0;
   left: 0;
-  width: 100%;
   height: 117.5px;
   z-index: 98;
   pointer-events: none; 
   background: #f8f8f8;
+  width: 100%;
+  pointer-events: none;
 }
 
 .ChatContainer {
   width: 100vw;
   height: calc(100vh - 117.5px);
-  padding: 0px 270px;
+  padding: 0px 250px;
+  padding-bottom: 95px;
   overflow-y: auto;
   box-sizing: border-box;
   position: relative;
@@ -320,6 +322,7 @@
   line-height: 1.5; 
   white-space: pre-wrap;
   word-break: break-word;
+  max-width: 720px;
 }
 
 .InputContainer {
@@ -328,6 +331,7 @@
   justify-content: space-between;
   width: 100%;
   gap: 12px;
+  pointer-events: auto;
 }
 
 .AttachButton{
@@ -401,9 +405,17 @@
   justify-content: flex-end;
 }
 
-.avatar {
-  width: 45px;
-  height: 45px;
+.ai_avatar {
+  width: 47px;
+  height: 47px;
+  object-fit: cover;
+  border-radius: 50%;
+  margin: 0 8px;
+}
+
+.user_avatar {
+  width: 42px;
+  height: 42px;
   object-fit: cover;
   border-radius: 50%;
   margin: 0 8px;

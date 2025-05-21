@@ -16,7 +16,7 @@ function Login() {
             [e.target.name]: e.target.value,
         });
     };
-
+    console.log(formData)
     const handleSubmit = async (e) => {
         e.preventDefault();
         setIsLoading(true);
@@ -37,7 +37,7 @@ function Login() {
             console.log(responseData);
             if (responseData.statusCode === 200) {
                 localStorage.setItem('token', responseData.data.token);
-                localStorage.setItem('userId', responseData.data.userId); 
+                localStorage.setItem('userID', responseData.data.userId); 
                 setFormData({ email: "", password: "" });
                 setIsLoading(false);
                 alert('로그인 성공!');
