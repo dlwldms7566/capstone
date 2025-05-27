@@ -199,8 +199,8 @@ function Chat() {
                 />
               </svg>
               <div style={{ marginTop: '8px' }}>
-                A: {faultA}%<br />
-                B: {faultB}%
+                <span style={{ color: '#C94C4C' }}>A: {faultA}%</span><br />
+                <span style={{ color: '#2A5CBF' }}>B: {faultB}%</span>
               </div>
               <div>
                 {road_type === "교차로" && (
@@ -339,8 +339,8 @@ function Chat() {
                 />
               </svg>
               <div style={{ marginTop: '8px' }}>
-                A: {faultA}%<br />
-                B: {faultB}%
+                <span style={{ color: '#C94C4C' }}>A: {faultA}%</span><br />
+                <span style={{ color: '#2A5CBF' }}>B: {faultB}%</span>
               </div>
               <div>
                 {road_type === "교차로" && (

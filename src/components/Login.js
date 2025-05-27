@@ -40,7 +40,7 @@ function Login() {
                 localStorage.setItem('userID', responseData.data.userId); 
                 setFormData({ email: "", password: "" });
                 setIsLoading(false);
-                alert('로그인 성공!');
+                // alert('로그인 성공!');
                 window.location.href = '/chat';
             } else {
                 alert(`로그인 실패: ${responseData.message || '이메일 또는 비밀번호가 올바르지 않습니다.'}`);

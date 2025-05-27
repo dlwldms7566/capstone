@@ -80,7 +80,7 @@ function SignUp() {
             console.log("서버 응답:", responseData);
     
             if (response.ok && responseData.statusCode === 200) {
-                alert('회원가입 성공! 로그인 페이지로 이동합니다.');
+                // alert('회원가입 성공! 로그인 페이지로 이동합니다.');
                 navigate('/login');
             } else if (response.status === 409 && responseData.message) {
                 alert(`회원가입 실패: ${responseData.message}`); 
